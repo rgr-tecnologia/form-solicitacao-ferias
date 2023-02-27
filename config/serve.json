@@ -4,7 +4,7 @@
   "https": true,
   "serveConfigurations": {
     "default": {
-      "pageUrl": "https://cjinter.sharepoint.com/sites/newportal/_layouts/15/SPListForm.aspx",
+      "pageUrl": "https://contoso.sharepoint.com/sites/newportal/_layouts/15/SPListForm.aspx",
       "formCustomizer": {
         "componentId": "555a2079-82c5-4be8-963d-5a3a6019d12e",
         "PageType": 8,
@@ -15,7 +15,7 @@
       }
     },
     "helloWorld_NewForm": {
-      "pageUrl": "https://cjinter.sharepoint.com/sites/newportal/_layouts/15/SPListForm.aspx",
+      "pageUrl": "https://contoso.sharepoint.com/sites/newportal/_layouts/15/SPListForm.aspx",
       "formCustomizer": {
         "componentId": "555a2079-82c5-4be8-963d-5a3a6019d12e",
         "PageType": 8,
@@ -26,7 +26,7 @@
       }
     },
     "helloWorld_EditForm": {
-      "pageUrl": "https://cjinter.sharepoint.com/sites/newportal/_layouts/15/SPListForm.aspx",
+      "pageUrl": "https://contoso.sharepoint.com/sites/newportal/_layouts/15/SPListForm.aspx",
       "formCustomizer": {
         "componentId": "555a2079-82c5-4be8-963d-5a3a6019d12e",
         "PageType": 6,
@@ -38,7 +38,7 @@
       }
     },
     "helloWorld_ViewForm": {
-      "pageUrl": "https://cjinter.sharepoint.com/sites/newportal/_layouts/15/SPListForm.aspx",
+      "pageUrl": "https://contoso.sharepoint.com/sites/newportal/_layouts/15/SPListForm.aspx",
       "formCustomizer": {
         "componentId": "555a2079-82c5-4be8-963d-5a3a6019d12e",
         "PageType": 4,
