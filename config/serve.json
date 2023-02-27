@@ -1,0 +1,53 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/spfx-serve.schema.json",
+  "port": 4321,
+  "https": true,
+  "serveConfigurations": {
+    "default": {
+      "pageUrl": "https://cjinter.sharepoint.com/sites/newportal/_layouts/15/SPListForm.aspx",
+      "formCustomizer": {
+        "componentId": "555a2079-82c5-4be8-963d-5a3a6019d12e",
+        "PageType": 8,
+        "RootFolder": "/sites/newportal/Lists/SolicitaFerias",
+        "properties": {
+          "sampleText": "Value"
+        }
+      }
+    },
+    "helloWorld_NewForm": {
+      "pageUrl": "https://cjinter.sharepoint.com/sites/newportal/_layouts/15/SPListForm.aspx",
+      "formCustomizer": {
+        "componentId": "555a2079-82c5-4be8-963d-5a3a6019d12e",
+        "PageType": 8,
+        "RootFolder": "/sites/newportal/Lists/SolicitaFerias",
+        "properties": {
+          "sampleText": "Value"
+        }
+      }
+    },
+    "helloWorld_EditForm": {
+      "pageUrl": "https://cjinter.sharepoint.com/sites/newportal/_layouts/15/SPListForm.aspx",
+      "formCustomizer": {
+        "componentId": "555a2079-82c5-4be8-963d-5a3a6019d12e",
+        "PageType": 6,
+        "RootFolder": "/sites/newportal/Lists/SolicitaFerias",
+        "ID": 7,
+        "properties": {
+          "sampleText": "Value"
+        }
+      }
+    },
+    "helloWorld_ViewForm": {
+      "pageUrl": "https://cjinter.sharepoint.com/sites/newportal/_layouts/15/SPListForm.aspx",
+      "formCustomizer": {
+        "componentId": "555a2079-82c5-4be8-963d-5a3a6019d12e",
+        "PageType": 4,
+        "RootFolder": "/sites/newportal/Lists/SolicitaFerias",
+        "ID": 7,
+        "properties": {
+          "sampleText": "Value"
+        }
+      }
+    }
+  }
+}

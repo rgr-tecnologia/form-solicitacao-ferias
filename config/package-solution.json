@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "form-solicitacao-ferias-client-side-solution",
+    "id": "ee03db33-988b-442d-a9ff-4b62a0173ca6",
+    "version": "1.5.1.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.16.0"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "form-solicitacao-ferias description"
+      },
+      "longDescription": {
+        "default": "form-solicitacao-ferias description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "form-solicitacao-ferias Feature",
+        "description": "The feature that activates elements of the form-solicitacao-ferias solution.",
+        "id": "e9005a61-14c3-46b8-9ad5-9c55803f4309",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/form-solicitacao-ferias.sppkg"
+  }
+}

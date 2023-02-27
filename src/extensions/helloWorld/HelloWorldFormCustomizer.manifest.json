@@ -1,0 +1,13 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-extension-manifest.schema.json",
+
+  "id": "555a2079-82c5-4be8-963d-5a3a6019d12e",
+  "alias": "HelloWorldFormCustomizer",
+  "componentType": "Extension",
+  "extensionType": "FormCustomizer",
+
+  "version": "*",
+  "manifestVersion": 2,
+
+  "requiresCustomScript": false
+}

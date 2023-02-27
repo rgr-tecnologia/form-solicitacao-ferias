@@ -1,0 +1,22 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "16.16.0",
+    "sdksVersions": {
+      "@microsoft/microsoft-graph-client": "3.0.2",
+      "@microsoft/teams-js": "2.4.1"
+    },
+    "version": "1.16.0",
+    "libraryName": "form-solicitacao-ferias",
+    "libraryId": "ee03db33-988b-442d-a9ff-4b62a0173ca6",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "form-solicitacao-ferias",
+    "solutionShortDescription": "form-solicitacao-ferias description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "extension",
+    "extensionType": "FormCustomizer"
+  }
+}
