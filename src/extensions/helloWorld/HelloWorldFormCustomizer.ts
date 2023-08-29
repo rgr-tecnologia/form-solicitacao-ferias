@@ -175,7 +175,7 @@ export default class HelloWorldFormCustomizer
           Abono: false,
           DecimoTerceioSalario: false,
           Observacao: null,
-          QtdDias: '10 x 14 x 6',
+          QtdDias: '30',
           AuthorId: null,
           ObservacaoGestor: null,
         }

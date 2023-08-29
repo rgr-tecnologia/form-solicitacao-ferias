@@ -113,7 +113,11 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
   }
 
   const _onChange= ({formField, value}: IFormOnChangeHandlerProps): void => {
-    setFormData({...formData, [formField]: value })
+    const _formData ={...formData} 
+    if (formField === 'QtdDias' && (value !== '10 x 14 x 6' && value !== '20 x 10')){
+      _formData.Abono = false
+    }
+    setFormData({..._formData, [formField]: value })
   }  
 
   const _onChangeObservacaoGestor= (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, value?: string)
