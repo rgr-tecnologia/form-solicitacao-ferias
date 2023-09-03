@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { DetailsList, IColumn, SelectionMode } from '@fluentui/react/lib/DetailsList';
-import IListSolicitacaoFeriasItem from './SoliticitacaoFerias';
+import IListSolicitacaoFeriasItem from '../SoliticitacaoFerias';
 import { Text } from 'office-ui-fabric-react';
 
 export interface ISolititacoesListProps {
@@ -13,8 +13,6 @@ type IListItemBase = Omit<IListSolicitacaoFeriasItem, "GestorId" | "AuthorId" | 
 export interface IListItem extends Omit<IListItemBase, IListItemOmitUnion> {
     Abono: string;
     DecimoTerceioSalario: string;
-    DataInicio: string;
-    DataFim: string;
 }
 
 export default function SolicitacoesList(props: ISolititacoesListProps): React.ReactElement<ISolititacoesListProps> {
@@ -25,24 +23,10 @@ export default function SolicitacoesList(props: ISolititacoesListProps): React.R
     const listItems: IListItem[] = items.map((item, index) => ({
         ...item,
         Abono: item.Abono? "Sim" : "Não",
-        DataInicio: `${item.DataInicio.toLocaleDateString()}`,
-        DataFim: `${item.DataFim.toLocaleDateString()}`,
         DecimoTerceioSalario: item.DecimoTerceioSalario? "Sim" : "Não"
     }))
 
     const columns: IColumn[] = [
-        {
-            key: 'column2',
-            name: 'Data de inicio',
-            fieldName: 'DataInicio',
-            minWidth: 100,
-        },
-        {
-            key: 'column3',
-            name: 'Data de fim',
-            fieldName: 'DataFim',
-            minWidth: 100,
-        },
         {
             key: 'column5',
             name: 'Abono',

@@ -1,32 +1,19 @@
 import * as React from 'react';
 import { FormDisplayMode } from '@microsoft/sp-core-library';
-import { FormCustomizerContext } from '@microsoft/sp-listview-extensibility';
 
 //UI components
-import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button';
 import { Stack, IStackTokens, IStackStyles } from '@fluentui/react/lib/Stack';
-import SolicitacoesList from './SolicitacoesList';
-import { TextField } from '@fluentui/react/lib/TextField';
+import SolicitacoesList from '../SolicitacoesList/SolicitacoesList';
 
 //Forms components
-import CreateForm from './CreateForm'
-import ViewForm from './ViewForm'
+import CreateForm from '../CreateForm/CreateForm'
+import ViewForm from '../ViewForm/ViewForm'
 
 //Types
-import IListSolicitacaoFeriasItem from './SoliticitacaoFerias';
+import IListSolicitacaoFeriasItem from '../SoliticitacaoFerias';
 import { Label } from 'office-ui-fabric-react';
-
-
-export interface IFormSolicitacaoFeriasProps {
-  context: FormCustomizerContext;
-  displayMode: FormDisplayMode;
-  etag?: string;
-  item: IListSolicitacaoFeriasItem;
-  onSave: (item: IListSolicitacaoFeriasItem) => void;
-  onClose: () => void;
-  userItems?: IListSolicitacaoFeriasItem[];
-  isUserManager: boolean;
-}
+import { IFormSolicitacaoFeriasProps } from './FormSolicitacaoFerias.props';
+import { FormButtons } from '../FormButtons/FormButtons';
 
 export interface IFormOnChangeHandlerProps {
   formField: string;
@@ -50,7 +37,6 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
   
   const containerStackTokens: IStackTokens = { 
     childrenGap: 5,
-    maxWidth: '50%',
     padding: '1rem'
   };
 
@@ -60,11 +46,11 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
 
   const containerStackStyles: IStackStyles = {
     root: {
-      minWidth: '100%',
+      minWidth: 'max-content',
     }
   }
 
-  const _validateForm= (): string[] => {
+  /*const _validateForm= (): string[] => {
     const todayDate = new Date();
     const {
       DataInicio,
@@ -86,10 +72,10 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     }
     
     return errorList
-  }
+  }*/
 
   const _onSave= (): void => {
-    const errorList = _validateForm()
+    //const errorList = _validateForm()
     const isFormValid = errorList.length > 0 ? false : true
 
     if(!isFormValid) {
@@ -101,13 +87,13 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
   }
 
   const _onApprove= (): void => {
-    formData.Status= 'Aprovado'
+    formData.Status= 'Approved'
   
     onSave(formData)
   }
 
-  const _onDisapprove= (): void => {
-    formData.Status= 'Rejeitado'
+  const _onReject= (): void => {
+    formData.Status= 'Rejected'
     
     onSave(formData)
   }
@@ -126,66 +112,29 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     value: value
   }) 
 
-  let buttonsElement: JSX.Element
   let formElement: JSX.Element
-  let observacaoGestorElement: JSX.Element
   
   if(displayMode === FormDisplayMode.Display || displayMode === FormDisplayMode.Edit) {
-    formElement = <ViewForm item={formData} />
+    formElement = 
+      <ViewForm 
+        item={formData} 
+        onChangeObservacoesGestor={() => {_onChangeObservacaoGestor()}}
+        isUserManager={isUserManager}/>
   }
 
   else {
     formElement = <CreateForm 
       context={context}
       item={formData}
-      onChangeHandler={_onChange} />
-  }
-
-  if(isUserManager && formData.Status === 'Solicitado') {
-    buttonsElement = (
-      <>
-        <PrimaryButton text='Aprovar' onClick={_onApprove}/>
-        <DefaultButton text='Reprovar' onClick={_onDisapprove}/>
-      </>
-    )
-
-    observacaoGestorElement= (
-      <>
-        <TextField label="Observação gestor" 
-          value={formData.ObservacaoGestor} 
-          onChange={_onChangeObservacaoGestor}
-          multiline rows={3}/>
-      </>
-    )
-  } 
-  else if(displayMode === FormDisplayMode.New) {
-    buttonsElement = (
-      <>
-        <PrimaryButton text='Enviar' onClick={_onSave}/>
-        <DefaultButton text='Cancelar' onClick={onClose}/>
-      </>
-    )
-  }
-  else if(
-    (displayMode === FormDisplayMode.Display || displayMode === FormDisplayMode.Edit) &&
-    (formData.Status === "Rejeitado" || formData.Status === "Aprovado")) {
-      observacaoGestorElement = ( 
-        <>
-          <Label>Observações gestor</Label>          
-          <TextField 
-          disabled
-          multiline
-          defaultValue={item.ObservacaoGestor? item.ObservacaoGestor : ''} />
-        </>
-      )
-            
+      onChangeHandler={_onChange}/>
   }
 
   return (
     <Stack
       horizontalAlign='center'>
       <Stack
-      tokens={containerStackTokens}>
+      tokens={containerStackTokens}
+      styles={containerStackStyles}>
 
         <Stack
         tokens={spacingStackTokens}
@@ -199,11 +148,6 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
           display: 'none'
         }} />
 
-        <Stack 
-        tokens={spacingStackTokens}>
-          {observacaoGestorElement}
-        </Stack>
-
         <Stack>
           <Label style={{
             color: 'red'
@@ -213,9 +157,18 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
         </Stack>
 
         <Stack
-        horizontal
-        tokens={spacingStackTokens}>
-          {buttonsElement}
+          horizontal
+          tokens={spacingStackTokens}>
+            <FormButtons 
+              onClose={onClose}
+              onSave={_onSave}
+              onApprove={_onApprove}
+              onReject={_onReject}
+              displayMode={displayMode}
+              isUserManager={isUserManager}
+              status={formData.Status}
+              isUserRH={false}
+            />
         </Stack>
 
         <hr />

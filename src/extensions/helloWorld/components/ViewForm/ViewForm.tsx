@@ -2,17 +2,15 @@ import * as React from 'react';
 
 import { Text } from '@fluentui/react/lib/Text';
 import { Label, Stack, IStackTokens, TextField } from 'office-ui-fabric-react';
+import { IViewFormSolicitacaoFeriasProps } from './ViewForm.props';
 
-import IListSolicitacaoFeriasItem from './SoliticitacaoFerias';
-
-export interface IViewFormSolicitacaoFeriasProps {
-  item: IListSolicitacaoFeriasItem;
-}
-
-export default function FormSolicitacaoFerias(props: IViewFormSolicitacaoFeriasProps)
+export default function ViewForm(props: IViewFormSolicitacaoFeriasProps)
 : React.ReactElement<IViewFormSolicitacaoFeriasProps> {
-
-  const { item } = props
+  const { 
+    item,
+    isUserManager,
+    onChangeObservacoesGestor
+  } = props
 
   const containerStackTokens: IStackTokens = { childrenGap: 5 };
 
@@ -20,23 +18,36 @@ export default function FormSolicitacaoFerias(props: IViewFormSolicitacaoFeriasP
     childrenGap: '1.5rem',
   };
 
+  let observacaoGestorElement: JSX.Element
+
+  if(isUserManager && item.Status === 'In review') {
+    observacaoGestorElement= (
+      <>
+        <TextField label="Observação gestor" 
+          value={item.ObservacaoGestor} 
+          onChange={onChangeObservacoesGestor}
+          multiline rows={3}/>
+      </>
+    )
+  }
+
+  else if(
+    (item.Status === "Rejected" || item.Status === "Approved")) {
+      observacaoGestorElement = ( 
+        <>
+          <Label>Observações gestor</Label>          
+          <TextField 
+            disabled
+            multiline
+            defaultValue={item.ObservacaoGestor? item.ObservacaoGestor : ''} />
+        </>
+      )    
+  }
+
   return (
     <Stack tokens={containerStackTokens}>
       <Stack>
         <Text variant='xLarge' styles={{root: {color: 'rgb(0, 120, 212)'}}}>Soliticação a ser avalidada</Text>
-      </Stack>
-
-      <Stack 
-      horizontal
-      tokens={spacingStackTokens}>
-        <Stack>
-          <Label> Data de Início </Label>
-          <TextField disabled defaultValue={item.DataInicio.toLocaleDateString()} />
-        </Stack>
-        <Stack>
-          <Label> Data de Fim </Label>
-          <TextField disabled defaultValue={item.DataFim.toLocaleDateString()} />
-        </Stack>
       </Stack>
 
       <Stack 
@@ -56,15 +67,12 @@ export default function FormSolicitacaoFerias(props: IViewFormSolicitacaoFeriasP
           <Label>13° salário</Label>
           <TextField disabled defaultValue={item.DecimoTerceioSalario? "Sim" : "Não"} />
         </Stack>
-      </Stack>
+      </Stack>      
 
-      <Stack>
-        <Label>Observações</Label>          
-        <TextField 
-          disabled
-          multiline
-          defaultValue={item.Observacao? item.Observacao : ''} />
-      </Stack>
+      <Stack 
+        tokens={spacingStackTokens}>
+          {observacaoGestorElement}
+        </Stack>
     </Stack>
   );
 }

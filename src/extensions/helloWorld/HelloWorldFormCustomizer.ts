@@ -7,12 +7,13 @@ import {
   BaseFormCustomizer
 } from '@microsoft/sp-listview-extensibility';
 
-import FormSolicitacaoFerias, { IFormSolicitacaoFeriasProps } from './components/FormSolicitacaoFerias';
+import { IFormSolicitacaoFeriasProps } from './components/FormSolicitacaoFerias/FormSolicitacaoFerias.props';
 
 import {
   SPHttpClient,
   SPHttpClientResponse,
 } from '@microsoft/sp-http';
+import FormSolicitacaoFerias from './components/FormSolicitacaoFerias/FormSolicitacaoFerias';
 
 /**
  * If your form customizer uses the ClientSideComponentProperties JSON input,
@@ -156,67 +157,65 @@ export default class HelloWorldFormCustomizer
       });
   }
 
-  public onInit(): Promise<void> {
+  public async onInit(): Promise<void> {
     this._allUsersList = {
       internalName: 'hierarquia_cjtrade',
       title: 'hierarquia_cjtrade',
       guid: '1733062b-2634-43fc-8207-42fe20b40ac4'   
-    }    
+    }
 
-    if (this.displayMode === FormDisplayMode.New) {
-      // we're creating a new item so nothing to load
-      return this._getManagerProfile()
-      .then((managerProfile: {Id: number}) => {
-        this._item = {
-          DataInicio: new Date(),
-          DataFim: new Date(),
-          Status: 'Solicitado',
-          GestorId: managerProfile.Id,
-          Abono: false,
-          DecimoTerceioSalario: false,
-          Observacao: null,
-          QtdDias: '30',
-          AuthorId: null,
-          ObservacaoGestor: null,
-        }
+    try {
+      if (this.displayMode === FormDisplayMode.New) {
+        
+          // we're creating a new item so nothing to load
+          const managerProfile = await this._getManagerProfile()
 
-        return this._getUserItems(this.context.pageContext.legacyPageContext.userId)
-        .then(items=> {
-          this._userItems = items.value.map(item => {
+          this._item = {
+            Status: 'Draft',
+            GestorId: managerProfile.Id,
+            Abono: false,
+            DecimoTerceioSalario: false,
+            Observacao: null,
+            QtdDias: null,
+            AuthorId: null,
+            ObservacaoGestor: null,
+            periods: []
+          }        
+
+          const userItems = await this._getUserItems(this.context.pageContext.legacyPageContext.userId)
+        
+          this._userItems = userItems.value.map(item => {
             return {
               ...item,
               DataFim: new Date(item.DataFim),
               DataInicio: new Date(item.DataInicio),
             }
           })
-        });
-      }) 
-      .catch(console.error)     
-    }
-    else {
-      return this._getItemData()
-      .then(item=> {
-        this._isUserManager= item.GestorId === this.context.pageContext.legacyPageContext.userId
+
+      }
+      else {
+        const currentItemData= await this._getItemData()
+
+        this._isUserManager= currentItemData.GestorId === this.context.pageContext.legacyPageContext.userId
 
         this._item= {
-          ...item,
-          DataFim: new Date(item.DataFim),
-          DataInicio: new Date(item.DataInicio),
+          ...currentItemData,
         }
 
-        return this._getUserItems(item.AuthorId)
-        .then(items=> {
-          this._userItems = items.value.map(item => {
-            return {
-              ...item,
-              DataFim: new Date(item.DataFim),
-              DataInicio: new Date(item.DataInicio),
-            }
-          })
-        });
-      })
-      .catch(console.error)
+        const userItems = await this._getUserItems(currentItemData.AuthorId)
+
+        this._userItems = userItems.value.map(item => {
+          return {
+            ...item,
+            DataFim: new Date(item.DataFim),
+            DataInicio: new Date(item.DataInicio),
+          }
+        })
+      }
     }  
+    catch(error) {
+      throw Error(error)
+    }
   }
 
   public render(): void {
@@ -231,7 +230,8 @@ export default class HelloWorldFormCustomizer
         onSave: this._onSave,
         onClose: this._onClose,
         isUserManager: this._isUserManager,
-        userItems: this._userItems
+        userItems: this._userItems,
+        periods: []
        } as IFormSolicitacaoFeriasProps);
 
     ReactDOM.render(helloWorld, this.domElement);
