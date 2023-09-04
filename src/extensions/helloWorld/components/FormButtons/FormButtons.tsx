@@ -7,11 +7,14 @@ export function FormButtons(props: FormButtons): JSX.Element {
     const {
         displayMode,
         isUserManager,
+        isMemberOfHR,
         status,
         onSave,
         onClose,
-        onApprove,
-        onReject,
+        onApproveManager,
+        onRejectManager,
+        onApproveHR,
+        onRejectHR,
     } = props
 
     let buttonsElement: JSX.Element
@@ -25,14 +28,23 @@ export function FormButtons(props: FormButtons): JSX.Element {
         )
     }
     
-    else if(isUserManager && status === 'In review') {
+    else if(isUserManager && status === 'In review manager') {
         buttonsElement = (
           <>
-            <PrimaryButton text='Aprovar' onClick={onApprove}/>
-            <DefaultButton text='Reprovar' onClick={onReject}/>
+            <PrimaryButton text='Aprovar' onClick={onApproveManager}/>
+            <DefaultButton text='Reprovar' onClick={onRejectManager}/>
           </>
         )
     }
+
+    else if(isMemberOfHR && status === 'In review HR') {
+      buttonsElement = (
+        <>
+          <PrimaryButton text='Aprovar' onClick={onApproveHR}/>
+          <DefaultButton text='Reprovar' onClick={onRejectHR}/>
+        </>
+      )
+  }
 
     return (
         <>

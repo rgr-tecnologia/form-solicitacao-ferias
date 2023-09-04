@@ -3,10 +3,12 @@ import { FormDisplayMode } from "@microsoft/sp-core-library";
 export interface FormButtons {
     displayMode: FormDisplayMode;
     isUserManager: boolean;
-    isUserRH: boolean;
+    isMemberOfHR: boolean;
     status: string;
     onSave: () => void;
     onClose: () => void;
-    onApprove: () => void;
-    onReject: () => void;
+    onApproveManager: () => void;
+    onRejectManager: () => void;
+    onApproveHR: () => void;
+    onRejectHR: () => void;
 }
