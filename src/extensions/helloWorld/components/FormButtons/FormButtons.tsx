@@ -7,7 +7,6 @@ export function FormButtons(props: FormButtons): JSX.Element {
     const {
         displayMode,
         isUserManager,
-        isUserRH,
         status,
         onSave,
         onClose,
@@ -24,9 +23,6 @@ export function FormButtons(props: FormButtons): JSX.Element {
             <DefaultButton text='Cancelar' onClick={onClose}/>
           </>
         )
-    }
-    if(isUserManager && status === 'In review') {
-
     }
     
     else if(isUserManager && status === 'In review') {

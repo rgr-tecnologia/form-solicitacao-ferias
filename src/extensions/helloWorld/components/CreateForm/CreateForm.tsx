@@ -30,32 +30,92 @@ export default function FormSolicitacaoFerias(props: ICreateFormFeriasProps): Re
     onChangeHandler
   } = props
 
-  const options = React.useMemo(() => {
-    const QuantidadeDiasOptions: Record<number, QuantidadeDiasOptions> = {
-      1: '30',
-      2: '20 + 10',
-      3: '20 + 10 (abono)',
-      4: '15 + 5 + 10 (abono)',
-      5: '15 + 15',
-      6: '20 + 5 + 5',
+  const QuantidadeDiasOptions: Record<number, QuantidadeDiasOptions> = React.useMemo(() => {
+    return {
+      1: {
+        text: '30',
+        totalDiasAbono: 0,
+        periods: [{
+          totalDias: 30
+        }]        
+      },
+      2: {
+        text: '20 + 10',
+        totalDiasAbono: 0,
+        periods: [
+        {
+          totalDias: 20
+        },
+        {
+          totalDias: 10
+        }]
+      },
+      3: {
+        text: '20 + 10 (abono)',
+        totalDiasAbono: 10,
+        periods: [{
+          totalDias: 20
+        }]
+      },
+      4: {
+        text: '15 + 5 + 10 (abono)',
+        totalDiasAbono: 10,
+        periods: [
+          {
+            totalDias: 15
+          },
+          {
+            totalDias: 5
+          }
+        ]
+      },
+      5: {
+        text:  '15 + 15',
+        totalDiasAbono: 0,
+        periods: [
+          {
+            totalDias: 15
+          },
+          {
+            totalDias: 15
+          }
+        ]
+      },
+      6: {
+        text:  '20 + 5 + 5',
+        totalDiasAbono: 0,
+        periods: [
+          {
+            totalDias: 20
+          },
+          {
+            totalDias: 5
+          },
+          {
+            totalDias: 5
+          }
+        ]
+      },
     };
+  }, [])
 
+  const dropdownQuantidadeDiasOptions = React.useMemo(() => {
     const MappedQuantidadeDiasOptions: IDropdownOption[] = []
 
     for (const key in QuantidadeDiasOptions) {
       if(QuantidadeDiasOptions[key]) {
-        MappedQuantidadeDiasOptions.push({key, text: QuantidadeDiasOptions[key]})
-      }    
+        MappedQuantidadeDiasOptions.push({key, text: QuantidadeDiasOptions[key].text})
+      }
     }
     return MappedQuantidadeDiasOptions
-  }, [])
+  }, [QuantidadeDiasOptions])
 
-  const [periods, setPeriods] = React.useState<typeof formData.periods>([])
-  const [selectedOption, setSelectedOption] = React.useState<IDropdownOption>({...options[0]})
+  const [periods, setPeriods] = React.useState<PeriodItem[]>([])
+  const [selectedOption, setSelectedOption] = React.useState<IDropdownOption>({...dropdownQuantidadeDiasOptions[0]})
 
   const defaultOption = React.useMemo<IDropdownOption>(() => {
     if(formData.QtdDias) {
-      const findDataResult = options.filter((option) => {
+      const findDataResult = dropdownQuantidadeDiasOptions.filter((option) => {
         return option.text === formData.QtdDias
       })[0]
   
@@ -66,20 +126,15 @@ export default function FormSolicitacaoFerias(props: ICreateFormFeriasProps): Re
 
       throw Error("Erro ao consultar dados, QtdDias não deve ser null")
     }
-  }, [])
+  }, [dropdownQuantidadeDiasOptions])
 
   React.useEffect(() => {
     const {
       key
     } = selectedOption
 
-    let totalPeriods = 0;
-    const selectedValue =  typeof key === "string" ? parseInt(key) : key;    
-    const baseItemData: PeriodItem = {
-      dataInicio: new Date(),
-      dataFim: new Date(),
-      status: 'In review'
-    }
+    let totalPeriods = 1;
+    const selectedValue =  typeof key === "string" ? parseInt(key) : key;
 
     switch(selectedValue) {
       case 1:
@@ -100,7 +155,23 @@ export default function FormSolicitacaoFerias(props: ICreateFormFeriasProps): Re
         break
     }
 
-    const dataToSet = [...new Array(totalPeriods)].map(() => ({...baseItemData}))
+    const dataToSet: PeriodItem[] = [...new Array(totalPeriods)].reduce((accumulator: PeriodItem[], _, index) => {
+      const periodoAtual = QuantidadeDiasOptions[selectedValue].periods[index]
+      const periodoAnterior = accumulator[index-1]
+
+      const dataInicio = index === 0 ? new Date(new Date().setDate(60)) : periodoAnterior.dataFim
+      const dataFim = new Date(dataInicio.getTime())
+      dataFim.setDate(dataFim.getDate() + periodoAtual.totalDias)
+
+      accumulator.push({
+        dataInicio,
+        dataFim,
+        status: 'In review'
+      })
+
+      return accumulator
+
+    }, [])
 
     setPeriods([...dataToSet])
   }, [selectedOption])
@@ -166,7 +237,7 @@ export default function FormSolicitacaoFerias(props: ICreateFormFeriasProps): Re
         tokens={spacingStackTokens}>
         <Dropdown
           label='Qtde. de Dias'
-          options={options}
+          options={dropdownQuantidadeDiasOptions}
           onChange={_onChangeQtdDias}
           selectedKey={selectedOption?.key}
           defaultSelectedKey={defaultOption?.key} />

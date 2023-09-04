@@ -21,8 +21,8 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
                     } = period
                     return (
                         <Stack tokens={tokes} key={index} horizontal>
-                            <DatePicker value={dataInicio} label="Data Início"/>
-                            <DatePicker value={dataFim} disabled label="Data Fim"/>
+                            <DatePicker value={dataInicio} minDate={dataInicio} label="Data Início"/>
+                            <DatePicker value={dataFim} minDate={dataFim} disabled label="Data Fim"/>
                             <TextField value={status} label="Status" readOnly={true}/>
                         </Stack>
                     )
