@@ -54,7 +54,7 @@ export default function ViewForm(props: IViewFormSolicitacaoFeriasProps)
       horizontal 
       tokens={spacingStackTokens}>
         <Stack>
-          <Label>Qtde. de Dias</Label>
+          <Label>Opções de férias</Label>
           <TextField disabled defaultValue={item.QtdDias} />
         </Stack>
 

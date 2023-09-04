@@ -28,7 +28,7 @@ export function FormButtons(props: FormButtons): JSX.Element {
         )
     }
     
-    else if(isUserManager && status === 'In review manager') {
+    else if(isUserManager && status === 'In review') {
         buttonsElement = (
           <>
             <PrimaryButton text='Aprovar' onClick={onApproveManager}/>
@@ -37,7 +37,7 @@ export function FormButtons(props: FormButtons): JSX.Element {
         )
     }
 
-    else if(isMemberOfHR && status === 'In review HR') {
+    else if(isMemberOfHR && status === 'Approved by manager') {
       buttonsElement = (
         <>
           <PrimaryButton text='Aprovar' onClick={onApproveHR}/>

@@ -236,7 +236,7 @@ export default function FormSolicitacaoFerias(props: ICreateFormFeriasProps): Re
       <Stack
         tokens={spacingStackTokens}>
         <Dropdown
-          label='Qtde. de Dias'
+          label='Opções de férias'
           options={dropdownQuantidadeDiasOptions}
           onChange={_onChangeQtdDias}
           selectedKey={selectedOption?.key}
