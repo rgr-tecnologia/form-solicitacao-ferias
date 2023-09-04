@@ -9,6 +9,7 @@ export default function ViewForm(props: IViewFormSolicitacaoFeriasProps)
   const { 
     item,
     isUserManager,
+    isMemberOfHR,
     onChangeObservacoesGestor
   } = props
 
@@ -31,8 +32,7 @@ export default function ViewForm(props: IViewFormSolicitacaoFeriasProps)
     )
   }
 
-  else if(
-    (item.Status === "Rejected" || item.Status === "Approved")) {
+  else if(!isUserManager && !isMemberOfHR) {
       observacaoGestorElement = ( 
         <>
           <Label>Observações gestor</Label>          

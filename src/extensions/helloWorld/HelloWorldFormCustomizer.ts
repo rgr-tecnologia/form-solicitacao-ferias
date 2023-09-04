@@ -47,6 +47,8 @@ export default class HelloWorldFormCustomizer
 
   private _isUserManager: boolean
 
+  private _isMemberOfHR: boolean
+
   private _userItems: IFormSolicitacaoFeriasProps["item"][];
 
   private async _getManagerProfile(): Promise<{Id: number}> {    
@@ -194,9 +196,11 @@ export default class HelloWorldFormCustomizer
 
       }
       else {
-        const currentItemData= await this._getItemData()
+        const currentItemData = await this._getItemData()
 
-        this._isUserManager= currentItemData.GestorId === this.context.pageContext.legacyPageContext.userId
+        this._isUserManager = currentItemData.GestorId === this.context.pageContext.legacyPageContext.userId
+
+        this._isMemberOfHR = await this.isMemberOfGroup(139) 
 
         this._item= {
           ...currentItemData,
@@ -218,6 +222,20 @@ export default class HelloWorldFormCustomizer
     }
   }
 
+  private async getCurrentUserGroups(): Promise<any> {
+    const queryUrl = `${this.context.pageContext.web.absoluteUrl}/_api/web/currentuser/groups`;
+    const siteGroupsData = await this.context.spHttpClient.get(queryUrl, SPHttpClient.configurations.v1);
+    const siteGroups = (await siteGroupsData.json()).value;
+
+    return siteGroups
+  }
+
+  private async isMemberOfGroup(groupId: number): Promise<boolean> {
+    const userGroups = await this.getCurrentUserGroups()
+    const group = userGroups.find((group: {Id: number}) => group.Id === groupId)
+    return !!group
+  }
+
   public render(): void {
     // Use this method to perform your custom rendering.
 
@@ -230,6 +248,7 @@ export default class HelloWorldFormCustomizer
         onSave: this._onSave,
         onClose: this._onClose,
         isUserManager: this._isUserManager,
+        isMemberOfHR: this._isMemberOfHR,
         userItems: this._userItems,
         periods: []
        } as IFormSolicitacaoFeriasProps);

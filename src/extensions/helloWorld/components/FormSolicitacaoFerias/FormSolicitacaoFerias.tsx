@@ -27,6 +27,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     onSave,
     onClose,
     isUserManager,
+    isMemberOfHR,
     userItems,
     item,
     context,
@@ -80,21 +81,33 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
 
     if(!isFormValid) {
       setErrorlist(errorList)
-      return console.error(errorList[0]);      
+      throw Error(errorList[0]);      
     }
 
     onSave(formData)    
   }
 
-  const _onApprove= (): void => {
-    formData.Status= 'Approved'
+  const onApproveManager= (): void => {
+    formData.Status= 'Approved by manager'
   
     onSave(formData)
   }
 
-  const _onReject= (): void => {
-    formData.Status= 'Rejected'
+  const onRejectManager= (): void => {
+    formData.Status= 'Rejected by manager'
     
+    onSave(formData)
+  }
+
+  const onApproveHR= (): void => {
+    formData.Status= 'Approved by HR'
+  
+    onSave(formData)
+  }
+
+  const onRejectHR= (): void => {
+    formData.Status= 'Rejected by HR'
+  
     onSave(formData)
   }
 
@@ -119,7 +132,8 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
       <ViewForm 
         item={formData} 
         onChangeObservacoesGestor={() => {_onChangeObservacaoGestor()}}
-        isUserManager={isUserManager}/>
+        isUserManager={isUserManager}
+        isMemberOfHR={isMemberOfHR}/>
   }
 
   else {
@@ -162,12 +176,14 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
             <FormButtons 
               onClose={onClose}
               onSave={_onSave}
-              onApprove={_onApprove}
-              onReject={_onReject}
+              onApproveManager={onApproveManager}
+              onRejectManager={onRejectManager}
+              onApproveHR={onApproveHR}
+              onRejectHR={onRejectHR}
               displayMode={displayMode}
               isUserManager={isUserManager}
+              isMemberOfHR={isMemberOfHR}
               status={formData.Status}
-              isUserRH={false}
             />
         </Stack>
 

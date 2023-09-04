@@ -23,7 +23,7 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
                         <Stack tokens={tokes} key={index} horizontal>
                             <DatePicker value={dataInicio} minDate={dataInicio} label="Data Início"/>
                             <DatePicker value={dataFim} minDate={dataFim} disabled label="Data Fim"/>
-                            <TextField value={status} label="Status" readOnly={true}/>
+                            <TextField value={status} label="Status" readOnly={true} borderless={true}/>
                         </Stack>
                     )
                 })

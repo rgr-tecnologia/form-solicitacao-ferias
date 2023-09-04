@@ -11,4 +11,5 @@ export interface IFormSolicitacaoFeriasProps {
     onClose: () => void;
     userItems?: IListSolicitacaoFeriasItem[];
     isUserManager: boolean;
+    isMemberOfHR: boolean;
   }
