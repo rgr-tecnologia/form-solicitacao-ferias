@@ -11,9 +11,9 @@ import { IFormSolicitacaoFeriasProps } from './components/FormSolicitacaoFerias/
 
 import {
   SPHttpClient,
-  SPHttpClientResponse,
 } from '@microsoft/sp-http';
 import FormSolicitacaoFerias from './components/FormSolicitacaoFerias/FormSolicitacaoFerias';
+import { PeriodItem } from './components/PeriodosFeriasList/PeriodosFeriasList.props';
 
 /**
  * If your form customizer uses the ClientSideComponentProperties JSON input,
@@ -38,6 +38,8 @@ export default class HelloWorldFormCustomizer
 
   // Added for item's etag to ensure integrity of the update; used with edit form
   private _etag?: string;
+
+  private secondaryListId: string = 'ff367779-18a9-43f1-8ffc-7237dc66ec80'
 
   private _allUsersList: {
     internalName: string,
@@ -131,32 +133,118 @@ export default class HelloWorldFormCustomizer
       })
   }
 
-  private _createItem(item: IFormSolicitacaoFeriasProps['item']): Promise<SPHttpClientResponse> {
-    const { guid } = this.context.list;
+  private async createOnSecondaryList(data: PeriodItem): Promise<any> {
+    const apiUrl = this.context.pageContext.web.absoluteUrl + `/_api/web/lists(guid'${this.secondaryListId}')/items`
+  
+    try {
+      const response = await this.context.spHttpClient.post(apiUrl, SPHttpClient.configurations.v1, {
+        headers: {
+          Accept: 'application/json;odata=verbose',
+          'Content-Type': 'application/json',
+          'odata-version': '',
+          'IF-MATCH': '*',
+        },
+        body: JSON.stringify(data),
+      });
+  
+      if (response.status === 204) {
+        return 
+      } else {
+        const responseJson = await response.json();
+        return {
+          ...responseJson,
+          Tag: responseJson['odata.etag'],
+        };
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
 
-    return this.context.spHttpClient
+  private async updateOnSecondaryList(data: PeriodItem): Promise<any> {
+    const { Id, ...dataToSave } = data;
+    const apiUrl = `${this.context.pageContext.web.absoluteUrl}/_api/web/lists(guid'${this.secondaryListId}')/items(${Id})`
+  
+    try {
+      const response = await this.context.spHttpClient.post(apiUrl, SPHttpClient.configurations.v1, {
+        headers: {
+          Accept: 'application/json;odata=verbose',
+          'Content-Type': 'application/json',
+          'odata-version': '',
+          'IF-MATCH': '*',
+          'X-HTTP-Method': 'MERGE',
+        },
+        body: JSON.stringify({
+          ...dataToSave,
+        }),
+      });
+  
+      if (response.status === 204) {
+        return 
+      } else {
+        const responseJson = await response.json();
+        return {
+          ...responseJson,
+          Tag: responseJson['odata.etag'],
+        };
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  private async _createItem(item: IFormSolicitacaoFeriasProps['item']): Promise<IFormSolicitacaoFeriasProps['item']> {
+    const { guid } = this.context.list;
+    const {
+      periods,
+      ...itemToSave
+    } = item
+
+    const postResponse = await this.context.spHttpClient
       .post(this.context.pageContext.web.absoluteUrl + `/_api/web/lists(guid'${guid}')/items`, 
         SPHttpClient.configurations.v1, {
         headers: {
           'content-type': 'application/json;odata.metadata=none'
         },
-        body: JSON.stringify(item)
+        body: JSON.stringify(itemToSave)
       });
+
+    const responseJSON = postResponse.ok ? await postResponse.json() : Promise.reject(postResponse.statusText)
+
+    const secondaryListPostResponse = periods.map(async period => await this.createOnSecondaryList({
+      ...period,
+      SolicitacaoFeriasId: responseJSON.Id
+    }))
+
+    await Promise.all(secondaryListPostResponse)
+
+    
+
+    return responseJSON
+    
   }
 
-  private _updateItem(item: IFormSolicitacaoFeriasProps['item']): Promise<SPHttpClientResponse> {
+  private async _updateItem(item: IFormSolicitacaoFeriasProps['item']): Promise<any> {
     const { guid } = this.context.list;
+    const {
+      periods,
+      ...itemToSave
+    } = item
 
-    return this.context.spHttpClient
-      .post(this.context.pageContext.web.absoluteUrl + `/_api/web/lists(guid'${guid}')/items(${this.context.pageContext.listItem.id})`, 
-        SPHttpClient.configurations.v1, {
-        headers: {
-          'content-type': 'application/json;odata.metadata=none',
-          'if-match': this._etag,
-          'x-http-method': 'MERGE'
-        },
-        body: JSON.stringify(item)
-      });
+    const apiUrl = this.context.pageContext.web.absoluteUrl + `/_api/web/lists(guid'${guid}')/items(${this.context.pageContext.listItem.id})`
+
+    await this.context.spHttpClient.post(apiUrl, SPHttpClient.configurations.v1, {
+      headers: {
+        'content-type': 'application/json;odata.metadata=none',
+        'if-match': this._etag,
+        'x-http-method': 'MERGE'
+      },
+      body: JSON.stringify(itemToSave)
+    });
+    
+    await Promise.all(periods.map(async period => this.updateOnSecondaryList(period)))
+
+    return Promise.resolve()
   }
 
   public async onInit(): Promise<void> {
@@ -263,19 +351,14 @@ export default class HelloWorldFormCustomizer
   }
 
   private _onSave = async (item: IFormSolicitacaoFeriasProps['item']): Promise<Promise<void>> => {
-    let request: Promise<SPHttpClientResponse>;
-
     if(this.displayMode === FormDisplayMode.New) {
-      request= this._createItem(item);
+      await this._createItem(item);
     }
     else {
-      request= this._updateItem(item);
+      await this._updateItem(item);
     }
 
-    request.then(res=> {
-      window.location.reload()
-    })
-    .catch(console.error)
+    window.location.reload()
   }
 
   private _onClose= (): void=> {

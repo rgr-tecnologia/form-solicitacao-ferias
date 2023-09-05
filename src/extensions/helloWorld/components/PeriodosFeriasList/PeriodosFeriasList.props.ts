@@ -4,8 +4,10 @@ export interface PeriodosFeriasListProps {
 }
 
 export interface PeriodItem {
-    dataInicio: Date
-    dataFim: Date
+    Id?: number
+    DataInicio: Date
+    DataFim: Date
+    SolicitacaoFeriasId?: number
 }
 
 export type PeriodItemStatusOptions = 'In review' | 'Approved' | 'Rejected'

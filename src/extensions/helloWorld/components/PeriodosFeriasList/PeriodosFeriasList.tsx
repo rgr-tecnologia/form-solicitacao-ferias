@@ -25,19 +25,19 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
             {
                 periods.map((period, index) => {
                     const {
-                        dataInicio,
-                        dataFim,
+                        DataInicio,
+                        DataFim,
                     } = period
                     return (
                         <Stack tokens={tokes} key={index} horizontal>
                             <DatePicker 
-                                value={dataInicio} 
-                                minDate={dataInicio} 
+                                value={DataInicio} 
+                                minDate={DataInicio} 
                                 label="Data Início"
                                 onSelectDate={(value: Date)=> _onChangeDataInicio(index, value)}/>
                             <DatePicker 
-                                value={dataFim} 
-                                minDate={dataFim} 
+                                value={DataFim} 
+                                minDate={DataFim} 
                                 disabled label="Data Fim"/>
                             {/* <TextField value={status} label="Status" readOnly={true} borderless={true}/> */}
                         </Stack>

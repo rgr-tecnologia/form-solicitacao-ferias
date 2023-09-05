@@ -51,31 +51,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     }
   }
 
-  /*const _validateForm= (): string[] => {
-    const todayDate = new Date();
-    const {
-      DataInicio,
-      DataFim
-    } = formData
-
-    const errorList= []
-
-    if(DataInicio >= DataFim) {
-      errorList.push('O valor do campo "Data de início" deve ser menor ao valor do campo "Data de fim"')
-    }
-     
-    else if (DataInicio < todayDate) {
-      errorList.push('O valor do campo "Data de início" deve ser maior ou igual à data de hoje')
-    }
- 
-    else if (DataFim <= todayDate) {
-      errorList.push('O valor do campo "Data de fim" deve ser maior à data de hoje')
-    }
-    
-    return errorList
-  }*/
-
-  const _onSave= (): void => {
+  const _onSend= (): void => {
     //const errorList = _validateForm()
     const isFormValid = errorList.length > 0 ? false : true
 
@@ -84,7 +60,10 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
       throw Error(errorList[0]);      
     }
 
-    onSave(formData)    
+    onSave({
+      ...formData,
+      Status: 'In review'
+    })    
   }
 
   const onApproveManager= (): void => {
@@ -175,7 +154,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
           tokens={spacingStackTokens}>
             <FormButtons 
               onClose={onClose}
-              onSave={_onSave}
+              onSave={_onSend}
               onApproveManager={onApproveManager}
               onRejectManager={onRejectManager}
               onApproveHR={onApproveHR}

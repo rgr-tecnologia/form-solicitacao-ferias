@@ -73,19 +73,25 @@ export default function FormSolicitacaoFerias(props: ICreateFormFeriasProps): Re
       const periodoAnterior = accumulator[index-1]
 
       const currentDate = new Date()
-      const dataInicio = index === 0 ? new Date(currentDate.setDate(currentDate.getDate() + 60)) : periodoAnterior.dataFim
-      const dataFim = new Date(dataInicio.getTime())
-      dataFim.setDate(dataFim.getDate() + periodoAtual.totalDias)
+      const DataInicio = index === 0 ? new Date(currentDate.setDate(currentDate.getDate() + 60)) : periodoAnterior.DataFim
+      const DataFim = new Date(DataInicio.getTime())
+      DataFim.setDate(DataFim.getDate() + periodoAtual.totalDias)
 
       accumulator.push({
-        dataInicio,
-        dataFim,
+        DataInicio,
+        DataFim,
       })
 
       return accumulator
     }, [])
 
+    onChangeHandler({
+      formField: 'periods',
+      value: dataToSet
+    })
+
     setPeriodos(dataToSet)
+
 
   }, [selectedOption])
 
@@ -124,22 +130,22 @@ export default function FormSolicitacaoFerias(props: ICreateFormFeriasProps): Re
     const { periods: quantidadeDiasPeriod } = QuantidadeDiasOptions[selectedValueKey]
 
     const changedPeriod = periods[index]
-    changedPeriod.dataInicio = value
-    changedPeriod.dataFim = new Date(changedPeriod.dataInicio.getTime())
-    changedPeriod.dataFim.setDate(changedPeriod.dataInicio.getDate() + quantidadeDiasPeriod[index].totalDias)
+    changedPeriod.DataInicio = value
+    changedPeriod.DataFim = new Date(changedPeriod.DataInicio.getTime())
+    changedPeriod.DataFim.setDate(changedPeriod.DataInicio.getDate() + quantidadeDiasPeriod[index].totalDias)
     
     const updatePeriods = [...periods].slice(index + 1).reduce((accumulator, period, index) => {
       const {
         totalDias
       } = quantidadeDiasPeriod[index + 1]
 
-      const dataInicio = index === 0 ? changedPeriod.dataFim : accumulator[index - 1].dataFim
-      const dataFim = new Date(dataInicio.getTime())
-      dataFim.setDate(period.dataFim.getDate() + totalDias)
+      const DataInicio = index === 0 ? changedPeriod.DataFim : accumulator[index - 1].DataFim
+      const DataFim = new Date(DataInicio.getTime())
+      DataFim.setDate(period.DataFim.getDate() + totalDias)
 
       const newPeriod = {
-        dataInicio,
-        dataFim
+        DataInicio,
+        DataFim
       }
 
       return [...accumulator, newPeriod]
@@ -150,7 +156,7 @@ export default function FormSolicitacaoFerias(props: ICreateFormFeriasProps): Re
     const newPeriods = [...[...periods].splice(0, index), changedPeriod, ...updatePeriods]
 
     onChangeHandler({
-      formField: 'Periodos',
+      formField: 'periods',
       value: newPeriods
     })
 
