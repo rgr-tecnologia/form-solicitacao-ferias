@@ -11,10 +11,9 @@ import { Dropdown, IDropdownOption } from '@fluentui/react/lib/Dropdown';
 import { Stack, IStackTokens } from '@fluentui/react/lib/Stack';
 import { Checkbox } from '@fluentui/react/lib/Checkbox';
 import { ICreateFormFeriasProps } from './CreateForm.props';
-
-import { QuantidadeDiasOptions } from '../../../../enums/QuantidadeDiasOptions';
 import { PeriodItem } from '../PeriodosFeriasList/PeriodosFeriasList.props';
 import { PeriodosFeriasList } from '../PeriodosFeriasList/PeriodosFeriasList';
+import { useQuantidadeDiasOptions } from '../../../../hooks/useQuantidadeDiasOptions';
 
 const containerStackTokens: IStackTokens = {
   childrenGap: '1rem'
@@ -30,88 +29,18 @@ export default function FormSolicitacaoFerias(props: ICreateFormFeriasProps): Re
     onChangeHandler
   } = props
 
-  const QuantidadeDiasOptions: Record<number, QuantidadeDiasOptions> = React.useMemo(() => {
-    return {
-      1: {
-        text: '30',
-        totalDiasAbono: 0,
-        periods: [{
-          totalDias: 30
-        }]        
-      },
-      2: {
-        text: '20 + 10',
-        totalDiasAbono: 0,
-        periods: [
-        {
-          totalDias: 20
-        },
-        {
-          totalDias: 10
-        }]
-      },
-      3: {
-        text: '20 + 10 (abono)',
-        totalDiasAbono: 10,
-        periods: [{
-          totalDias: 20
-        }]
-      },
-      4: {
-        text: '15 + 5 + 10 (abono)',
-        totalDiasAbono: 10,
-        periods: [
-          {
-            totalDias: 15
-          },
-          {
-            totalDias: 5
-          }
-        ]
-      },
-      5: {
-        text:  '15 + 15',
-        totalDiasAbono: 0,
-        periods: [
-          {
-            totalDias: 15
-          },
-          {
-            totalDias: 15
-          }
-        ]
-      },
-      6: {
-        text:  '20 + 5 + 5',
-        totalDiasAbono: 0,
-        periods: [
-          {
-            totalDias: 20
-          },
-          {
-            totalDias: 5
-          },
-          {
-            totalDias: 5
-          }
-        ]
-      },
-    };
-  }, [])
+  const QuantidadeDiasOptions = useQuantidadeDiasOptions()
 
-  const dropdownQuantidadeDiasOptions = React.useMemo(() => {
-    const MappedQuantidadeDiasOptions: IDropdownOption[] = []
-
-    for (const key in QuantidadeDiasOptions) {
-      if(QuantidadeDiasOptions[key]) {
-        MappedQuantidadeDiasOptions.push({key, text: QuantidadeDiasOptions[key].text})
-      }
-    }
-    return MappedQuantidadeDiasOptions
+  const dropdownQuantidadeDiasOptions: IDropdownOption[] = React.useMemo(() => {
+    return QuantidadeDiasOptions.map((option, index) => ({
+      key: index,
+      text: option.text
+    }))
   }, [QuantidadeDiasOptions])
 
-  const [periods, setPeriods] = React.useState<PeriodItem[]>([])
   const [selectedOption, setSelectedOption] = React.useState<IDropdownOption>({...dropdownQuantidadeDiasOptions[0]})
+
+  const [periods, setPeriodos] = React.useState<PeriodItem[]>(formData.periods)
 
   const defaultOption = React.useMemo<IDropdownOption>(() => {
     if(formData.QtdDias) {
@@ -132,48 +61,32 @@ export default function FormSolicitacaoFerias(props: ICreateFormFeriasProps): Re
     const {
       key
     } = selectedOption
+    
+    const selectedValueKey =  typeof key === "string" ? parseInt(key) : key;    
+    const selectedPeriod = QuantidadeDiasOptions[selectedValueKey]
+    const totalPeriods = selectedPeriod.periods.length;
 
-    let totalPeriods = 1;
-    const selectedValue =  typeof key === "string" ? parseInt(key) : key;
+    const newPeriods = [...new Array(totalPeriods)]
 
-    switch(selectedValue) {
-      case 1:
-        totalPeriods = 1
-        break
-      case 2:
-        totalPeriods = 2
-        break
-      case 3:
-        totalPeriods = 1
-        break
-      case 4:
-      case 5:
-        totalPeriods = 2
-        break
-      case 6:
-        totalPeriods = 3
-        break
-    }
-
-    const dataToSet: PeriodItem[] = [...new Array(totalPeriods)].reduce((accumulator: PeriodItem[], _, index) => {
-      const periodoAtual = QuantidadeDiasOptions[selectedValue].periods[index]
+    const dataToSet: PeriodItem[] = newPeriods.reduce((accumulator: PeriodItem[], _, index) => {
+      const periodoAtual = selectedPeriod.periods[index]
       const periodoAnterior = accumulator[index-1]
 
-      const dataInicio = index === 0 ? new Date(new Date().setDate(60)) : periodoAnterior.dataFim
+      const currentDate = new Date()
+      const dataInicio = index === 0 ? new Date(currentDate.setDate(currentDate.getDate() + 60)) : periodoAnterior.dataFim
       const dataFim = new Date(dataInicio.getTime())
       dataFim.setDate(dataFim.getDate() + periodoAtual.totalDias)
 
       accumulator.push({
         dataInicio,
         dataFim,
-        status: 'In review'
       })
 
       return accumulator
-
     }, [])
 
-    setPeriods([...dataToSet])
+    setPeriodos(dataToSet)
+
   }, [selectedOption])
 
   const _onChangeAbono = (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, isChecked?: boolean)
@@ -188,22 +101,6 @@ export default function FormSolicitacaoFerias(props: ICreateFormFeriasProps): Re
       value: isChecked
     })
 
-  /*const _onChangeDataInicio = (value?: Date): void => {
-    if ((value.getDay() === DayOfWeek.Friday) || (value.getDay() === DayOfWeek.Saturday)  || (value.getDay() === DayOfWeek.Sunday) ){
-      alert('Não é permitido agendar férias com início às sextas-feiras, sábados ou domingos.');        
-        onChangeHandler({
-          formField: 'DataInicio',
-          value: ''
-        });
-      } 
-      else {
-        onChangeHandler({
-          formField: 'DataInicio',
-          value: value
-        });
-    }
-  };*/
-
   const _onChangeObservacao = (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, value?: string)
     : void => onChangeHandler({
       formField: 'Observacao',
@@ -216,6 +113,48 @@ export default function FormSolicitacaoFerias(props: ICreateFormFeriasProps): Re
     onChangeHandler({
       formField: 'QtdDias',
       value: option.text})
+  }
+
+  const onChangeDataInicio = (index: number, value: Date) => {
+    const {
+      key
+    } = selectedOption
+
+    const selectedValueKey =  typeof key === "string" ? parseInt(key) : key;
+    const { periods: quantidadeDiasPeriod } = QuantidadeDiasOptions[selectedValueKey]
+
+    const changedPeriod = periods[index]
+    changedPeriod.dataInicio = value
+    changedPeriod.dataFim = new Date(changedPeriod.dataInicio.getTime())
+    changedPeriod.dataFim.setDate(changedPeriod.dataInicio.getDate() + quantidadeDiasPeriod[index].totalDias)
+    
+    const updatePeriods = [...periods].slice(index + 1).reduce((accumulator, period, index) => {
+      const {
+        totalDias
+      } = quantidadeDiasPeriod[index + 1]
+
+      const dataInicio = index === 0 ? changedPeriod.dataFim : accumulator[index - 1].dataFim
+      const dataFim = new Date(dataInicio.getTime())
+      dataFim.setDate(period.dataFim.getDate() + totalDias)
+
+      const newPeriod = {
+        dataInicio,
+        dataFim
+      }
+
+      return [...accumulator, newPeriod]
+    }, [])
+
+
+
+    const newPeriods = [...[...periods].splice(0, index), changedPeriod, ...updatePeriods]
+
+    onChangeHandler({
+      formField: 'Periodos',
+      value: newPeriods
+    })
+
+    setPeriodos(newPeriods)
   }
 
   return (
@@ -260,7 +199,7 @@ export default function FormSolicitacaoFerias(props: ICreateFormFeriasProps): Re
       </Stack>
 
       <Stack>
-        <PeriodosFeriasList periods={periods} />
+        <PeriodosFeriasList periods={periods} onChangeDataInicio={onChangeDataInicio}/>
       </Stack>
     </Stack>
   );
