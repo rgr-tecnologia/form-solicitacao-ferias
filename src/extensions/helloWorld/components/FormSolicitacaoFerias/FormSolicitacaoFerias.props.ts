@@ -12,4 +12,5 @@ export interface IFormSolicitacaoFeriasProps {
     userItems?: IListSolicitacaoFeriasItem[];
     isUserManager: boolean;
     isMemberOfHR: boolean;
+    isAuthor: boolean;
   }

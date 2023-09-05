@@ -7,8 +7,9 @@
       "pageUrl": "https://cjinter.sharepoint.com/sites/newportal/_layouts/15/SPListForm.aspx",
       "formCustomizer": {
         "componentId": "555a2079-82c5-4be8-963d-5a3a6019d12e",
-        "PageType": 8,
+        "PageType": 6,
         "RootFolder": "/sites/newportal/Lists/SolicitaFerias",
+        "ID": 112,
         "properties": {
           "sampleText": "Value"
         }

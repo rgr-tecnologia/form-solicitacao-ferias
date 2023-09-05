@@ -1,13 +1,12 @@
 import * as React from 'react';
 import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button';
-import { FormDisplayMode } from '@microsoft/sp-core-library';
 import { FormButtons } from './FormButtons.props';
 
 export function FormButtons(props: FormButtons): JSX.Element {
     const {
-        displayMode,
         isUserManager,
         isMemberOfHR,
+        isAuthor,
         status,
         onSave,
         onClose,
@@ -19,7 +18,7 @@ export function FormButtons(props: FormButtons): JSX.Element {
 
     let buttonsElement: JSX.Element
 
-    if(displayMode === FormDisplayMode.New) {
+    if(isAuthor && (status === 'Rejected by manager' || status === 'Rejected by HR')) {
         buttonsElement = (
           <>
             <PrimaryButton text='Enviar' onClick={onSave}/>
@@ -28,7 +27,7 @@ export function FormButtons(props: FormButtons): JSX.Element {
         )
     }
     
-    else if(isUserManager && status === 'In review') {
+    else if(isUserManager && status === 'In review by manager') {
         buttonsElement = (
           <>
             <PrimaryButton text='Aprovar' onClick={onApproveManager}/>
@@ -37,7 +36,7 @@ export function FormButtons(props: FormButtons): JSX.Element {
         )
     }
 
-    else if(isMemberOfHR && status === 'Approved by manager') {
+    else if(isMemberOfHR && status === 'In review by HR') {
       buttonsElement = (
         <>
           <PrimaryButton text='Aprovar' onClick={onApproveHR}/>

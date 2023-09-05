@@ -205,7 +205,7 @@ export default function FormSolicitacaoFerias(props: ICreateFormFeriasProps): Re
       </Stack>
 
       <Stack>
-        <PeriodosFeriasList periods={periods} onChangeDataInicio={onChangeDataInicio}/>
+        <PeriodosFeriasList isDisabled={false} periods={periods} onChangeDataInicio={onChangeDataInicio}/>
       </Stack>
     </Stack>
   );

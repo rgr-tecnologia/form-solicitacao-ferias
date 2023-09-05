@@ -133,6 +133,25 @@ export default class HelloWorldFormCustomizer
       })
   }
 
+  private async getItemsFromSecondaryList(id: number): Promise<PeriodItem[]> { 
+    const apiUrl =  this.context.pageContext.web.absoluteUrl + `/_api/web/lists(guid'${this.secondaryListId}')/items`
+
+    const getDataResponse = await this.context.spHttpClient.get(apiUrl, SPHttpClient.configurations.v1)
+    const { value }  = await getDataResponse.json()
+
+    if(value.length === 0) {
+      return value
+    }
+
+    return value.map((item: any) => {
+      return {
+        ...item,
+        DataInicio: new Date(item.DataInicio),
+        DataFim: new Date(item.DataFim),
+      }
+    })
+  }
+
   private async createOnSecondaryList(data: PeriodItem): Promise<any> {
     const apiUrl = this.context.pageContext.web.absoluteUrl + `/_api/web/lists(guid'${this.secondaryListId}')/items`
   
@@ -294,6 +313,8 @@ export default class HelloWorldFormCustomizer
           ...currentItemData,
         }
 
+        this._item.periods = await this.getItemsFromSecondaryList(this.context.pageContext.listItem.id)
+
         const userItems = await this._getUserItems(currentItemData.AuthorId)
 
         this._userItems = userItems.value.map(item => {
@@ -337,6 +358,7 @@ export default class HelloWorldFormCustomizer
         onClose: this._onClose,
         isUserManager: this._isUserManager,
         isMemberOfHR: this._isMemberOfHR,
+        isAuthor: this._item.AuthorId === this.context.pageContext.legacyPageContext.userId,
         userItems: this._userItems,
         periods: []
        } as IFormSolicitacaoFeriasProps);

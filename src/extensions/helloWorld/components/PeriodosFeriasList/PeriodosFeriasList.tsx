@@ -5,7 +5,8 @@ import { PeriodosFeriasListProps } from "./PeriodosFeriasList.props";
 export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element {
     const {
         periods,
-        onChangeDataInicio
+        onChangeDataInicio,
+        isDisabled
     } = props
 
     const tokes: IStackTokens = {
@@ -34,7 +35,8 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
                                 value={DataInicio} 
                                 minDate={DataInicio} 
                                 label="Data Início"
-                                onSelectDate={(value: Date)=> _onChangeDataInicio(index, value)}/>
+                                onSelectDate={(value: Date)=> _onChangeDataInicio(index, value)}
+                                disabled={isDisabled}/>
                             <DatePicker 
                                 value={DataFim} 
                                 minDate={DataFim} 

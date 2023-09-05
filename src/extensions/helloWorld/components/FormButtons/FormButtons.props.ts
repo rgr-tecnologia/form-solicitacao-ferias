@@ -4,6 +4,7 @@ export interface FormButtons {
     displayMode: FormDisplayMode;
     isUserManager: boolean;
     isMemberOfHR: boolean;
+    isAuthor: boolean;
     status: string;
     onSave: () => void;
     onClose: () => void;

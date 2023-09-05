@@ -28,6 +28,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     onClose,
     isUserManager,
     isMemberOfHR,
+    isAuthor,
     userItems,
     item,
     context,
@@ -162,6 +163,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
               displayMode={displayMode}
               isUserManager={isUserManager}
               isMemberOfHR={isMemberOfHR}
+              isAuthor={isAuthor}
               status={formData.Status}
             />
         </Stack>
