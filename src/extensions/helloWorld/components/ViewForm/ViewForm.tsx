@@ -11,7 +11,8 @@ export default function ViewForm(props: IViewFormSolicitacaoFeriasProps)
     item,
     isUserManager,
     isMemberOfHR,
-    onChangeObservacoesGestor
+    onChangeObservacoesGestor,
+    onChangeObservacaoRH
   } = props
 
   const {
@@ -24,12 +25,12 @@ export default function ViewForm(props: IViewFormSolicitacaoFeriasProps)
     childrenGap: '1.5rem',
   };
 
-  let observacaoGestorElement: JSX.Element
+  let observacoes: JSX.Element
 
   if(isUserManager && item.Status === 'In review by manager') {
-    observacaoGestorElement= (
+    observacoes= (
       <>
-        <TextField label="Observação gestor" 
+        <TextField label="Observações gestor" 
           value={item.ObservacaoGestor} 
           onChange={onChangeObservacoesGestor}
           multiline rows={3}/>
@@ -37,14 +38,20 @@ export default function ViewForm(props: IViewFormSolicitacaoFeriasProps)
     )
   }
 
-  else if(!isUserManager && !isMemberOfHR) {
-      observacaoGestorElement = ( 
+  else if(isMemberOfHR && item.Status === "In review by HR") {
+    observacoes = ( 
         <>
-          <Label>Observações gestor</Label>          
-          <TextField 
-            disabled
-            multiline
-            defaultValue={item.ObservacaoGestor? item.ObservacaoGestor : ''} />
+          <>
+            <TextField label="Observações gestor" 
+              value={item.ObservacaoGestor} 
+              onChange={onChangeObservacoesGestor}
+              disabled={true}
+              multiline rows={3}/>
+          </>
+          <TextField label="Observações RH" 
+            value={item.ObservacaoRH} 
+            onChange={onChangeObservacaoRH}
+            multiline rows={3}/>
         </>
       )    
   }
@@ -55,28 +62,23 @@ export default function ViewForm(props: IViewFormSolicitacaoFeriasProps)
         <Text variant='xLarge' styles={{root: {color: 'rgb(0, 120, 212)'}}}>Soliticação a ser avalidada</Text>
       </Stack>
 
-      <Stack 
-      horizontal 
-      tokens={spacingStackTokens}>
-        <Stack>
-          <Label>Opções de férias</Label>
-          <TextField disabled defaultValue={item.QtdDias} />
-        </Stack>
+      <Stack>
+        <Label>Opções de férias</Label>
+        <TextField disabled defaultValue={item.QtdDias} />
+      </Stack>
 
-        <Stack>
-          <Label>Abono</Label>
-          <TextField disabled defaultValue={item.Abono? "Sim" : "Não"} />
-        </Stack>
-
-        <Stack>
-          <Label>13° salário</Label>
-          <TextField disabled defaultValue={item.DecimoTerceioSalario? "Sim" : "Não"} />
-        </Stack>
-      </Stack>      
+      <Stack>
+        <TextField label="Observações" 
+              value={item.Observacao} 
+              onChange={onChangeObservacaoRH}
+              disabled={true}
+              multiline 
+              rows={3}/>
+      </Stack>
 
       <Stack 
         tokens={spacingStackTokens}>
-          {observacaoGestorElement}
+          {observacoes}
       </Stack>
 
       <Stack>

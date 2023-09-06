@@ -7,37 +7,20 @@ export interface ISolititacoesListProps {
   items: IListSolicitacaoFeriasItem[];
 }
 
-type IListItemOmitUnion = "Abono" | "DecimoTerceioSalario" | "DataInicio" | "DataFim"
-type IListItemBase = Omit<IListSolicitacaoFeriasItem, "GestorId" | "AuthorId" | "Observacao">
-
-export interface IListItem extends Omit<IListItemBase, IListItemOmitUnion> {
-    Abono: string;
-    DecimoTerceioSalario: string;
-}
-
 export default function SolicitacoesList(props: ISolititacoesListProps): React.ReactElement<ISolititacoesListProps> {
     const {
         items
     }= props
 
-    const listItems: IListItem[] = items.map((item, index) => ({
-        ...item,
-        Abono: item.Abono? "Sim" : "Não",
-        DecimoTerceioSalario: item.DecimoTerceioSalario? "Sim" : "Não"
-    }))
-
     const columns: IColumn[] = [
         {
-            key: 'column5',
-            name: 'Abono',
-            fieldName: 'Abono',
+            key: 'column6',
+            name: 'Ano de referência',
+            fieldName: 'Created',
             minWidth: 100,
-        },
-        {
-            key: 'column5',
-            name: '13° salário',
-            fieldName: 'DecimoTerceioSalario',
-            minWidth: 100,
+            onRender: (item: IListSolicitacaoFeriasItem) => {
+                return <Text>{new Date(item.Created).getFullYear()}</Text>
+            }
         },
         {
             key: 'column6',
@@ -67,7 +50,7 @@ export default function SolicitacoesList(props: ISolititacoesListProps): React.R
             </Text>
             <DetailsList 
             selectionMode={SelectionMode.none}
-            items={listItems.slice(0, 5)}
+            items={items.slice(0, 5)}
             columns={columns}/>
         </>
 

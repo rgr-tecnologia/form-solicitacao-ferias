@@ -9,7 +9,6 @@ import { Text } from 'office-ui-fabric-react';
 import { TextField } from '@fluentui/react/lib/TextField';
 import { Dropdown, IDropdownOption } from '@fluentui/react/lib/Dropdown';
 import { Stack, IStackTokens } from '@fluentui/react/lib/Stack';
-import { Checkbox } from '@fluentui/react/lib/Checkbox';
 import { ICreateFormFeriasProps } from './CreateForm.props';
 import { PeriodItem } from '../PeriodosFeriasList/PeriodosFeriasList.props';
 import { PeriodosFeriasList } from '../PeriodosFeriasList/PeriodosFeriasList';
@@ -81,6 +80,11 @@ export default function CreateForm(props: ICreateFormFeriasProps): React.ReactEl
     }, [])
 
     onChangeHandler({
+      formField: 'AbonoQuantidadeDias',
+      value: selectedPeriod.totalDiasAbono
+    })
+
+    onChangeHandler({
       formField: 'periods',
       value: dataToSet
     })
@@ -89,12 +93,6 @@ export default function CreateForm(props: ICreateFormFeriasProps): React.ReactEl
 
 
   }, [selectedOption])
-
-  const _onChangeAbono = (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, isChecked?: boolean)
-    : void => onChangeHandler({
-      formField: 'Abono',
-      value: isChecked
-    })
 
   const _onChangeObservacao = (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, value?: string)
     : void => onChangeHandler({
@@ -184,20 +182,18 @@ export default function CreateForm(props: ICreateFormFeriasProps): React.ReactEl
       </Stack>
 
       <Stack
-        tokens={spacingStackTokens}>
+        tokens={spacingStackTokens}
+        horizontal>
         <Dropdown
           label='Opções de férias'
           options={dropdownQuantidadeDiasOptions}
           onChange={_onChangeQtdDias}
-          selectedKey={defaultOption?.key}
+          selectedKey={selectedOption?.key}
           defaultSelectedKey={defaultOption?.key} />
-      </Stack>
-
-      <Stack
-        horizontal
-        tokens={spacingStackTokens}>
-        {(formData.QtdDias === '10 x 14 x 6' || formData.QtdDias === '20 x 10') &&
-          <Checkbox label="Abono" checked={formData.Abono} onChange={_onChangeAbono} />}
+        <TextField 
+          label="Abono (dias)"
+          defaultValue={`${formData.AbonoQuantidadeDias}`}
+          disabled={true}/>
       </Stack>
 
       <Stack

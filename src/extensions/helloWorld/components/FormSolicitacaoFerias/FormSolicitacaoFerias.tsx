@@ -98,12 +98,18 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     const newFormData= {...formData} as any
     newFormData[formField] = value    
 
-    setFormData({...newFormData,  })
+    setFormData({...newFormData})
   }  
 
-  const _onChangeObservacaoGestor= (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, value?: string)
+  const onChangeObservacaoGestor= (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, value?: string)
   : void => _onChange({
     formField: 'ObservacaoGestor',
+    value: value
+  })
+
+  const onChangeObservacaoRH= (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, value?: string)
+  : void => _onChange({
+    formField: 'ObservacaoRH',
     value: value
   }) 
 
@@ -120,7 +126,8 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     formElement = 
       <ViewForm 
         item={formData} 
-        onChangeObservacoesGestor={() => {_onChangeObservacaoGestor()}}
+        onChangeObservacoesGestor={onChangeObservacaoGestor}
+        onChangeObservacaoRH={onChangeObservacaoRH}
         isUserManager={isUserManager}
         isMemberOfHR={isMemberOfHR}/>
   }

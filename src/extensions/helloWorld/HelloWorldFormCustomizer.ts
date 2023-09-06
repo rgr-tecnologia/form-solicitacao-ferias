@@ -36,9 +36,6 @@ export default class HelloWorldFormCustomizer
   // Added for the item to show in the form; use with edit and view form
   private _item: IFormSolicitacaoFeriasProps['item'];
 
-  // Added for item's etag to ensure integrity of the update; used with edit form
-  private _etag?: string;
-
   private secondaryListId: string = 'ff367779-18a9-43f1-8ffc-7237dc66ec80'
 
   private _allUsersList: {
@@ -123,8 +120,6 @@ export default class HelloWorldFormCustomizer
       })
       .then(res => {
         if (res.ok) {
-          // store etag in case we'll need to update the item
-          this._etag = res.headers.get('ETag');
           return res.json();
         }
         else {
@@ -178,6 +173,7 @@ export default class HelloWorldFormCustomizer
     const { guid } = this.context.list;
     const {
       periods,
+      Created,
       ...itemToSave
     } = item
 
@@ -209,6 +205,7 @@ export default class HelloWorldFormCustomizer
     const { guid } = this.context.list;
     const {
       periods,
+      Created,
       ...itemToSave
     } = item
 
@@ -217,8 +214,9 @@ export default class HelloWorldFormCustomizer
     await this.context.spHttpClient.post(apiUrl, SPHttpClient.configurations.v1, {
       headers: {
         'content-type': 'application/json;odata.metadata=none',
-        'if-match': this._etag,
+        'if-match': '*',
         'x-http-method': 'MERGE'
+
       },
       body: JSON.stringify(itemToSave)
     });
@@ -269,13 +267,14 @@ export default class HelloWorldFormCustomizer
           this._item = {
             Status: 'Draft',
             GestorId: managerProfile.Id,
-            Abono: false,
-            DecimoTerceioSalario: false,
+            AbonoQuantidadeDias: 0,
             Observacao: null,
             QtdDias: null,
             AuthorId: null,
             ObservacaoGestor: null,
-            periods: []
+            ObservacaoRH: null,
+            periods: [],
+            Created: new Date().toISOString(),
           }        
 
           const userItems = await this._getUserItems(this.context.pageContext.legacyPageContext.userId)
@@ -339,7 +338,6 @@ export default class HelloWorldFormCustomizer
       React.createElement(FormSolicitacaoFerias, {
         context: this.context,
         displayMode: this.displayMode,
-        etag: this._etag,
         item: this._item,
         onSave: this._onSave,
         onClose: this._onClose,
