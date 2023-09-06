@@ -23,7 +23,7 @@ const spacingStackTokens: IStackTokens = {
   childrenGap: '1rem',
 };
 
-export default function FormSolicitacaoFerias(props: ICreateFormFeriasProps): React.ReactElement<ICreateFormFeriasProps> {
+export default function CreateForm(props: ICreateFormFeriasProps): React.ReactElement<ICreateFormFeriasProps> {
   const {
     item: formData,
     onChangeHandler
@@ -38,24 +38,18 @@ export default function FormSolicitacaoFerias(props: ICreateFormFeriasProps): Re
     }))
   }, [QuantidadeDiasOptions])
 
-  const [selectedOption, setSelectedOption] = React.useState<IDropdownOption>({...dropdownQuantidadeDiasOptions[0]})
+  const defaultOption = React.useMemo<IDropdownOption>(() => {
+    let defaultOption = dropdownQuantidadeDiasOptions[0]
+    if(formData.QtdDias) {
+      defaultOption = dropdownQuantidadeDiasOptions.find((option) => {
+        return option.text === formData.QtdDias
+      })
+    }
+    return defaultOption
+  }, [dropdownQuantidadeDiasOptions])
 
   const [periods, setPeriodos] = React.useState<PeriodItem[]>(formData.periods)
-
-  const defaultOption = React.useMemo<IDropdownOption>(() => {
-    if(formData.QtdDias) {
-      const findDataResult = dropdownQuantidadeDiasOptions.filter((option) => {
-        return option.text === formData.QtdDias
-      })[0]
-  
-      if(findDataResult) {
-        setSelectedOption(findDataResult)
-        return findDataResult
-      }
-
-      throw Error("Erro ao consultar dados, QtdDias não deve ser null")
-    }
-  }, [dropdownQuantidadeDiasOptions])
+  const [selectedOption, setSelectedOption] = React.useState<IDropdownOption>(defaultOption)
 
   React.useEffect(() => {
     const {
@@ -80,6 +74,7 @@ export default function FormSolicitacaoFerias(props: ICreateFormFeriasProps): Re
       accumulator.push({
         DataInicio,
         DataFim,
+        DecimoTerceiro: false
       })
 
       return accumulator
@@ -98,12 +93,6 @@ export default function FormSolicitacaoFerias(props: ICreateFormFeriasProps): Re
   const _onChangeAbono = (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, isChecked?: boolean)
     : void => onChangeHandler({
       formField: 'Abono',
-      value: isChecked
-    })
-
-  const _onChangeSalario = (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, isChecked?: boolean)
-    : void => onChangeHandler({
-      formField: 'DecimoTerceioSalario',
       value: isChecked
     })
 
@@ -163,6 +152,22 @@ export default function FormSolicitacaoFerias(props: ICreateFormFeriasProps): Re
     setPeriodos(newPeriods)
   }
 
+  const onChangeDecimoTerceiro = (index: number, value: boolean) => {
+    const changedPeriod = {...periods[index]}
+
+    const newPeriods = [...periods]
+    newPeriods.forEach((period) => period.DecimoTerceiro = false)
+    newPeriods[index] = changedPeriod
+    newPeriods[index].DecimoTerceiro = value
+
+    onChangeHandler({
+      formField: 'periods',
+      value: newPeriods
+    })
+
+    setPeriodos(newPeriods)
+  }
+
   return (
     <Stack
       tokens={containerStackTokens}>
@@ -184,7 +189,7 @@ export default function FormSolicitacaoFerias(props: ICreateFormFeriasProps): Re
           label='Opções de férias'
           options={dropdownQuantidadeDiasOptions}
           onChange={_onChangeQtdDias}
-          selectedKey={selectedOption?.key}
+          selectedKey={defaultOption?.key}
           defaultSelectedKey={defaultOption?.key} />
       </Stack>
 
@@ -193,7 +198,6 @@ export default function FormSolicitacaoFerias(props: ICreateFormFeriasProps): Re
         tokens={spacingStackTokens}>
         {(formData.QtdDias === '10 x 14 x 6' || formData.QtdDias === '20 x 10') &&
           <Checkbox label="Abono" checked={formData.Abono} onChange={_onChangeAbono} />}
-        <Checkbox label="13° salário" checked={formData.DecimoTerceioSalario} onChange={_onChangeSalario} />
       </Stack>
 
       <Stack
@@ -205,7 +209,11 @@ export default function FormSolicitacaoFerias(props: ICreateFormFeriasProps): Re
       </Stack>
 
       <Stack>
-        <PeriodosFeriasList isDisabled={false} periods={periods} onChangeDataInicio={onChangeDataInicio}/>
+        <PeriodosFeriasList 
+          isDisabled={false} 
+          periods={periods} 
+          onChangeDataInicio={onChangeDataInicio}
+          onChangeDecimoTerceiro={onChangeDecimoTerceiro}/>
       </Stack>
     </Stack>
   );

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { FormDisplayMode } from '@microsoft/sp-core-library';
 
 //UI components
 import { Stack, IStackTokens, IStackStyles } from '@fluentui/react/lib/Stack';
@@ -16,8 +15,8 @@ import { IFormSolicitacaoFeriasProps } from './FormSolicitacaoFerias.props';
 import { FormButtons } from '../FormButtons/FormButtons';
 
 export interface IFormOnChangeHandlerProps {
-  formField: string;
-  value: IListSolicitacaoFeriasItem[keyof IListSolicitacaoFeriasItem];
+  formField: keyof IListSolicitacaoFeriasItem;
+  value: any;
 }
 
 export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps)
@@ -34,7 +33,11 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     context,
   } = props
 
-  const [formData, setFormData] = React.useState({...item})
+  const {
+    Status
+  } = item
+
+  const [formData, setFormData] = React.useState<IListSolicitacaoFeriasItem>({...item})
   const [errorList, setErrorlist] = React.useState<string[]>([])
   
   const containerStackTokens: IStackTokens = { 
@@ -63,7 +66,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
 
     onSave({
       ...formData,
-      Status: 'In review'
+      Status: 'In review by manager'
     })    
   }
 
@@ -91,12 +94,11 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     onSave(formData)
   }
 
-  const _onChange= ({formField, value}: IFormOnChangeHandlerProps): void => {
-    const _formData ={...formData} 
-    if (formField === 'QtdDias' && (value !== '10 x 14 x 6' && value !== '20 x 10')){
-      _formData.Abono = false
-    }
-    setFormData({..._formData, [formField]: value })
+  const _onChange= ({formField, value} : any): void => {
+    const newFormData= {...formData} as any
+    newFormData[formField] = value    
+
+    setFormData({...newFormData,  })
   }  
 
   const _onChangeObservacaoGestor= (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, value?: string)
@@ -107,20 +109,20 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
 
   let formElement: JSX.Element
   
-  if(displayMode === FormDisplayMode.Display || displayMode === FormDisplayMode.Edit) {
+  if(Status === 'Rejected by manager' || Status === 'Rejected by HR') {
+    formElement = <CreateForm 
+      context={context}
+      item={formData}
+      onChangeHandler={_onChange}/>
+  }
+
+  else {
     formElement = 
       <ViewForm 
         item={formData} 
         onChangeObservacoesGestor={() => {_onChangeObservacaoGestor()}}
         isUserManager={isUserManager}
         isMemberOfHR={isMemberOfHR}/>
-  }
-
-  else {
-    formElement = <CreateForm 
-      context={context}
-      item={formData}
-      onChangeHandler={_onChange}/>
   }
 
   return (

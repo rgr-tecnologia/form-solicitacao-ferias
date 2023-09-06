@@ -158,10 +158,7 @@ export default class HelloWorldFormCustomizer
     try {
       const response = await this.context.spHttpClient.post(apiUrl, SPHttpClient.configurations.v1, {
         headers: {
-          Accept: 'application/json;odata=verbose',
           'Content-Type': 'application/json',
-          'odata-version': '',
-          'IF-MATCH': '*',
         },
         body: JSON.stringify(data),
       });
@@ -170,42 +167,7 @@ export default class HelloWorldFormCustomizer
         return 
       } else {
         const responseJson = await response.json();
-        return {
-          ...responseJson,
-          Tag: responseJson['odata.etag'],
-        };
-      }
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  private async updateOnSecondaryList(data: PeriodItem): Promise<any> {
-    const { Id, ...dataToSave } = data;
-    const apiUrl = `${this.context.pageContext.web.absoluteUrl}/_api/web/lists(guid'${this.secondaryListId}')/items(${Id})`
-  
-    try {
-      const response = await this.context.spHttpClient.post(apiUrl, SPHttpClient.configurations.v1, {
-        headers: {
-          Accept: 'application/json;odata=verbose',
-          'Content-Type': 'application/json',
-          'odata-version': '',
-          'IF-MATCH': '*',
-          'X-HTTP-Method': 'MERGE',
-        },
-        body: JSON.stringify({
-          ...dataToSave,
-        }),
-      });
-  
-      if (response.status === 204) {
-        return 
-      } else {
-        const responseJson = await response.json();
-        return {
-          ...responseJson,
-          Tag: responseJson['odata.etag'],
-        };
+        return responseJson;
       }
     } catch (error) {
       throw error;
@@ -260,10 +222,35 @@ export default class HelloWorldFormCustomizer
       },
       body: JSON.stringify(itemToSave)
     });
+
+    if(this._item.periods.length > 0) {
+      await Promise.all(this._item.periods.map(async period => await this.deleteItemFromSecondaryList(period.Id)))
+      this._item.periods = []
+    }
     
-    await Promise.all(periods.map(async period => this.updateOnSecondaryList(period)))
+    await Promise.all(periods.map(async period => await this.createOnSecondaryList(period)))
 
     return Promise.resolve()
+  }
+
+  private async deleteItemFromSecondaryList(id: number): Promise<void> { 
+    const apiUrl = this.context.pageContext.web.absoluteUrl + `/_api/web/lists(guid'${this.secondaryListId}')/items(${id})`
+
+    const response = await this.context.spHttpClient.fetch(apiUrl, SPHttpClient.configurations.v1, {
+      method: 'DELETE',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "IF-MATCH": '*'
+      },
+    })
+
+    if(response.ok) {
+      return Promise.resolve()
+    }
+    else {
+      await Promise.reject(response.statusText)
+    }
   }
 
   public async onInit(): Promise<void> {
@@ -360,7 +347,6 @@ export default class HelloWorldFormCustomizer
         isMemberOfHR: this._isMemberOfHR,
         isAuthor: this._item.AuthorId === this.context.pageContext.legacyPageContext.userId,
         userItems: this._userItems,
-        periods: []
        } as IFormSolicitacaoFeriasProps);
 
     ReactDOM.render(helloWorld, this.domElement);

@@ -26,7 +26,7 @@ export default function ViewForm(props: IViewFormSolicitacaoFeriasProps)
 
   let observacaoGestorElement: JSX.Element
 
-  if(isUserManager && item.Status === 'In review') {
+  if(isUserManager && item.Status === 'In review by manager') {
     observacaoGestorElement= (
       <>
         <TextField label="Observação gestor" 
