@@ -121,14 +121,14 @@ export default function CreateForm(props: ICreateFormFeriasProps): React.ReactEl
     changedPeriod.DataFim = new Date(changedPeriod.DataInicio.getTime())
     changedPeriod.DataFim.setDate(changedPeriod.DataInicio.getDate() + quantidadeDiasPeriod[index].totalDias)
     
-    const updatePeriods = [...periods].slice(index + 1).reduce((accumulator, period, index) => {
+    const updatePeriods = [...periods].slice(index + 1).reduce((accumulator, _, index) => {
       const {
         totalDias
       } = quantidadeDiasPeriod[index + 1]
 
       const DataInicio = index === 0 ? changedPeriod.DataFim : accumulator[index - 1].DataFim
       const DataFim = new Date(DataInicio.getTime())
-      DataFim.setDate(period.DataFim.getDate() + totalDias)
+      DataFim.setDate(DataFim.getDate() + totalDias)
 
       const newPeriod = {
         DataInicio,
@@ -137,8 +137,6 @@ export default function CreateForm(props: ICreateFormFeriasProps): React.ReactEl
 
       return [...accumulator, newPeriod]
     }, [])
-
-
 
     const newPeriods = [...[...periods].splice(0, index), changedPeriod, ...updatePeriods]
 
