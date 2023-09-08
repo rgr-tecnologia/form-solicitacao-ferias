@@ -18,7 +18,7 @@ export function FormButtons(props: FormButtons): JSX.Element {
 
     let buttonsElement: JSX.Element
 
-    if(isAuthor && (status === 'Rejected by manager' || status === 'Rejected by HR')) {
+    if(isAuthor && (status === 'Rejected by manager' || status === 'Rejected by HR') || status === 'Draft') {
         buttonsElement = (
           <>
             <PrimaryButton text='Enviar' onClick={onSave}/>

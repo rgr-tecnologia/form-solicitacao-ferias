@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { DetailsList, IColumn, SelectionMode } from '@fluentui/react/lib/DetailsList';
 import IListSolicitacaoFeriasItem from '../SoliticitacaoFerias';
-import { Text } from 'office-ui-fabric-react';
+import { Link, Text } from 'office-ui-fabric-react';
 
 export interface ISolititacoesListProps {
   items: IListSolicitacaoFeriasItem[];
@@ -19,13 +19,19 @@ export default function SolicitacoesList(props: ISolititacoesListProps): React.R
             fieldName: 'Created',
             minWidth: 100,
             onRender: (item: IListSolicitacaoFeriasItem) => {
-                return <Text>{new Date(item.Created).getFullYear()}</Text>
+                return (
+                    <Link
+                        href={`/sites/newportal/_layouts/15/SPListForm.aspx?PageType=4&List=01c2737e-aec9-47d1-ad24-3569b2bc534b&ID=${item.Id}`}
+                        target='_blank'>
+                        {new Date(item.Created).getFullYear()}
+                    </Link>
+                )
             }
         },
         {
             key: 'column6',
             name: 'QtdDias',
-            fieldName: 'QtdDias',
+            fieldName: 'Qtd. Dias',
             minWidth: 100,
         },
         {
@@ -39,19 +45,19 @@ export default function SolicitacoesList(props: ISolititacoesListProps): React.R
     return (
         <>
             <Text
-            variant='xLarge'
-            color='rgb(0, 120, 212)'
-            styles={{
-                root: {
-                    color: 'rgb(0, 120, 212)',
-                }
-            }}>
+                variant='xLarge'
+                color='rgb(0, 120, 212)'
+                styles={{
+                    root: {
+                        color: 'rgb(0, 120, 212)',
+                    }
+                }}>
                 Histórico de solicitações do colaborador
             </Text>
             <DetailsList 
-            selectionMode={SelectionMode.none}
-            items={items.slice(0, 5)}
-            columns={columns}/>
+                selectionMode={SelectionMode.none}
+                items={items.slice(0, 5)}
+                columns={columns}/>
         </>
 
     )

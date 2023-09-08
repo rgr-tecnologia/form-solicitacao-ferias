@@ -33,10 +33,18 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
                 horizontalAlign="space-around" 
                 verticalAlign="center">
 
-                <Label>Período</Label>
-                <Label>Data Início</Label>
-                <Label>Data Fim</Label>
-                <Label>13° salário?</Label>
+                <Stack>
+                    <Label>Período</Label>
+                </Stack>
+                <Stack>
+                    <Label>Data Início</Label>
+                </Stack>
+                <Stack>
+                    <Label>Data Fim</Label>
+                </Stack>
+                <Stack>
+                    <Label>13° salário?</Label>
+                </Stack>
             </Stack>
             {
                 periods.map((period, index) => {

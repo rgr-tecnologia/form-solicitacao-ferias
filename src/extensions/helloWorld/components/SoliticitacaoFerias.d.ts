@@ -2,14 +2,15 @@ import { StatusSolicitacaoFerias } from "../../../enums/StatusSolicitacaoFerias"
 import { PeriodItem } from "./PeriodosFeriasList/PeriodosFeriasList.props";
 
 export default interface IListSolicitacaoFeriasItem {
+    Id?: number;
     AbonoQuantidadeDias: number;
-    Status: StatusSolicitacaoFerias;
-    GestorId: number;
-    Observacao: string;
-    QtdDias: string;
     AuthorId: number;
     Created: string;
+    GestorId: number;
+    Observacao: string;
     ObservacaoGestor: string;
     ObservacaoRH: string;
+    QtdDias: string;
+    Status: StatusSolicitacaoFerias;
     periods: PeriodItem[]
 }

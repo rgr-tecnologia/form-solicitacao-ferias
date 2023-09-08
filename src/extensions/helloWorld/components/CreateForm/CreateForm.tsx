@@ -24,11 +24,13 @@ const spacingStackTokens: IStackTokens = {
 
 export default function CreateForm(props: ICreateFormFeriasProps): React.ReactElement<ICreateFormFeriasProps> {
   const {
-    item: formData,
+    item,
     onChangeHandler
   } = props
 
   const QuantidadeDiasOptions = useQuantidadeDiasOptions()
+
+  const formData = React.useMemo(() => item, [item])
 
   const dropdownQuantidadeDiasOptions: IDropdownOption[] = React.useMemo(() => {
     return QuantidadeDiasOptions.map((option, index) => ({
@@ -37,7 +39,7 @@ export default function CreateForm(props: ICreateFormFeriasProps): React.ReactEl
     }))
   }, [QuantidadeDiasOptions])
 
-  const defaultOption = React.useMemo<IDropdownOption>(() => {
+  const selectedOption = React.useMemo<IDropdownOption>(() => {
     let defaultOption = dropdownQuantidadeDiasOptions[0]
     if(formData.QtdDias) {
       defaultOption = dropdownQuantidadeDiasOptions.find((option) => {
@@ -45,10 +47,20 @@ export default function CreateForm(props: ICreateFormFeriasProps): React.ReactEl
       })
     }
     return defaultOption
-  }, [dropdownQuantidadeDiasOptions])
+  }, [dropdownQuantidadeDiasOptions, formData])
+
+  /*const defaultOption = React.useMemo<IDropdownOption>(() => {
+    let defaultOption = dropdownQuantidadeDiasOptions[0]
+    if(formData.QtdDias) {
+      defaultOption = dropdownQuantidadeDiasOptions.find((option) => {
+        return option.text === formData.QtdDias
+      })
+    }
+    return defaultOption
+  }, [dropdownQuantidadeDiasOptions])*/
 
   const [periods, setPeriodos] = React.useState<PeriodItem[]>(formData.periods)
-  const [selectedOption, setSelectedOption] = React.useState<IDropdownOption>(defaultOption)
+  //const [selectedOption, setSelectedOption] = React.useState<IDropdownOption>(defaultOption)
 
   React.useEffect(() => {
     const {
@@ -102,7 +114,6 @@ export default function CreateForm(props: ICreateFormFeriasProps): React.ReactEl
 
   const _onChangeQtdDias = (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, option?: IDropdownOption
   ): void => {
-    setSelectedOption(option)
     onChangeHandler({
       formField: 'QtdDias',
       value: option.text})
@@ -164,6 +175,31 @@ export default function CreateForm(props: ICreateFormFeriasProps): React.ReactEl
     setPeriodos(newPeriods)
   }
 
+  let observacoes: JSX.Element
+
+  if(formData.Status === 'Rejected by manager') {
+    observacoes= (
+      <>
+        <TextField label="Observações gestor" 
+          value={formData.ObservacaoGestor} 
+          disabled={true}
+          multiline rows={3}/>
+      </>
+    )
+  }
+
+  else if(formData.Status === "Rejected by HR") {
+    observacoes = ( 
+        <>
+          <TextField label="Observações RH" 
+            value={formData.ObservacaoRH} 
+            multiline 
+            disabled={true}
+            rows={3}/>
+        </>
+      )    
+  }
+
   return (
     <Stack
       tokens={containerStackTokens}>
@@ -179,27 +215,22 @@ export default function CreateForm(props: ICreateFormFeriasProps): React.ReactEl
           }>Nova soliticação</Text>
       </Stack>
 
-      <Stack
-        tokens={spacingStackTokens}
-        horizontal>
-        <Dropdown
+      <Dropdown
           label='Opções de férias'
           options={dropdownQuantidadeDiasOptions}
           onChange={_onChangeQtdDias}
-          selectedKey={selectedOption?.key}
-          defaultSelectedKey={defaultOption?.key} />
-        <TextField 
-          label="Abono (dias)"
-          defaultValue={`${formData.AbonoQuantidadeDias}`}
-          disabled={true}/>
-      </Stack>
-
+          selectedKey={selectedOption?.key} />
+          
       <Stack
         tokens={spacingStackTokens}>
         <TextField label="Observações"
           value={formData.Observacao}
           onChange={_onChangeObservacao}
           multiline rows={3} />
+      </Stack>
+
+      <Stack>
+        {observacoes}
       </Stack>
 
       <Stack>

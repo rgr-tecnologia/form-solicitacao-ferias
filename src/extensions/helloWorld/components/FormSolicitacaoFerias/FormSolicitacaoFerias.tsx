@@ -115,7 +115,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
 
   let formElement: JSX.Element
   
-  if(Status === 'Rejected by manager' || Status === 'Rejected by HR') {
+  if(Status === 'Draft' || Status === 'Rejected by manager' || Status === 'Rejected by HR') {
     formElement = <CreateForm 
       context={context}
       item={formData}
