@@ -49,18 +49,7 @@ export default function CreateForm(props: ICreateFormFeriasProps): React.ReactEl
     return defaultOption
   }, [dropdownQuantidadeDiasOptions, formData])
 
-  /*const defaultOption = React.useMemo<IDropdownOption>(() => {
-    let defaultOption = dropdownQuantidadeDiasOptions[0]
-    if(formData.QtdDias) {
-      defaultOption = dropdownQuantidadeDiasOptions.find((option) => {
-        return option.text === formData.QtdDias
-      })
-    }
-    return defaultOption
-  }, [dropdownQuantidadeDiasOptions])*/
-
   const [periods, setPeriodos] = React.useState<PeriodItem[]>(formData.periods)
-  //const [selectedOption, setSelectedOption] = React.useState<IDropdownOption>(defaultOption)
 
   React.useEffect(() => {
     const {
