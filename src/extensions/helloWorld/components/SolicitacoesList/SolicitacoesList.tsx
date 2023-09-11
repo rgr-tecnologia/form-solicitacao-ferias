@@ -18,6 +18,7 @@ export default function SolicitacoesList(props: ISolititacoesListProps): React.R
             name: 'Ano de referência',
             fieldName: 'Created',
             minWidth: 100,
+            maxWidth: 100,
             onRender: (item: IListSolicitacaoFeriasItem) => {
                 return (
                     <Link
