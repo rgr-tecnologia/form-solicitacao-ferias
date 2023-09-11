@@ -108,7 +108,7 @@ export default function CreateForm(props: ICreateFormFeriasProps): React.ReactEl
       value: option.text})
   }
 
-  const onChangeDataInicio = (index: number, value: Date) => {
+  const onChangeDataInicio = (index: number, value: Date): void => {
     const {
       key
     } = selectedOption
@@ -148,11 +148,11 @@ export default function CreateForm(props: ICreateFormFeriasProps): React.ReactEl
     setPeriodos(newPeriods)
   }
 
-  const onChangeDecimoTerceiro = (index: number, value: boolean) => {
+  const onChangeDecimoTerceiro = (index: number, value: boolean): void => {
     const changedPeriod = {...periods[index]}
 
     const newPeriods = [...periods]
-    newPeriods.forEach((period) => period.DecimoTerceiro = false)
+    newPeriods.forEach((period) => { period.DecimoTerceiro = false })
     newPeriods[index] = changedPeriod
     newPeriods[index].DecimoTerceiro = value
 

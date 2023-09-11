@@ -150,22 +150,18 @@ export default class HelloWorldFormCustomizer
   private async createOnSecondaryList(data: PeriodItem): Promise<any> {
     const apiUrl = this.context.pageContext.web.absoluteUrl + `/_api/web/lists(guid'${this.secondaryListId}')/items`
   
-    try {
-      const response = await this.context.spHttpClient.post(apiUrl, SPHttpClient.configurations.v1, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-  
-      if (response.status === 204) {
-        return 
-      } else {
-        const responseJson = await response.json();
-        return responseJson;
-      }
-    } catch (error) {
-      throw error;
+    const response = await this.context.spHttpClient.post(apiUrl, SPHttpClient.configurations.v1, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (response.status === 204) {
+      return 
+    } else {
+      const responseJson = await response.json();
+      return responseJson;
     }
   }
 
