@@ -8,7 +8,7 @@ export function FormButtons(props: FormButtons): JSX.Element {
         isMemberOfHR,
         isAuthor,
         status,
-        onSave,
+        onSend,
         onClose,
         onApproveManager,
         onRejectManager,
@@ -21,7 +21,7 @@ export function FormButtons(props: FormButtons): JSX.Element {
     if(isAuthor && (status === 'Rejected by manager' || status === 'Rejected by HR') || status === 'Draft') {
         buttonsElement = (
           <>
-            <PrimaryButton text='Enviar' onClick={onSave}/>
+            <PrimaryButton text='Enviar' onClick={onSend}/>
             <DefaultButton text='Cancelar' onClick={onClose}/>
           </>
         )
@@ -42,8 +42,16 @@ export function FormButtons(props: FormButtons): JSX.Element {
           <PrimaryButton text='Aprovar' onClick={onApproveHR}/>
           <DefaultButton text='Reprovar' onClick={onRejectHR}/>
         </>
-      )
-  }
+      )      
+    }
+
+    else if(isMemberOfHR && status === 'Approved by HR') {
+      buttonsElement = (
+        <>
+          <PrimaryButton text='Salvar' onClick={onApproveHR}/>
+        </>
+      )      
+    }
 
     return (
         <>

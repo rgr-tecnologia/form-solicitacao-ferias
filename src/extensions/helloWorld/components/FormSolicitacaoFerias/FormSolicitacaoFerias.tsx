@@ -110,6 +110,10 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     onSave(formData)
   }
 
+  const onSaveHR= (): void => {  
+    onSave(formData)
+  }
+
   const _onChange= ({formField, value} : any): void => {
     const newFormData= {...formData} as any
     newFormData[formField] = value    
@@ -179,12 +183,13 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
           horizontal
           tokens={spacingStackTokens}>
             <FormButtons 
+            onSend={_onSend}
               onClose={onClose}
-              onSave={_onSend}
               onApproveManager={onApproveManager}
               onRejectManager={onRejectManager}
               onApproveHR={onApproveHR}
               onRejectHR={onRejectHR}
+              onSaveHR={onSaveHR}
               displayMode={displayMode}
               isUserManager={isUserManager}
               isMemberOfHR={isMemberOfHR}

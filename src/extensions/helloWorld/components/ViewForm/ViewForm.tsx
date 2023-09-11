@@ -82,7 +82,10 @@ export default function ViewForm(props: IViewFormSolicitacaoFeriasProps)
       </Stack>
 
       <Stack>
-        <PeriodosFeriasList isDisabled={true} periods={periods}/>
+        <PeriodosFeriasList 
+          disableDataInicio={isMemberOfHR && item.Status === "In review by HR"}
+          disableDecimoTerceiro={true} 
+          periods={periods}/>
       </Stack>
     </Stack>
   );

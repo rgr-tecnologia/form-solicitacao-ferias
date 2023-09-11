@@ -7,7 +7,8 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
         periods,
         onChangeDataInicio,
         onChangeDecimoTerceiro,
-        isDisabled
+        disableDataInicio,
+        disableDecimoTerceiro,
     } = props
 
     const tokens: IStackTokens = {
@@ -70,7 +71,7 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
                                     minDate={index === 0 ? new Date(new Date().setDate(new Date().getDate() + 60)) : periods[index - 1].DataFim}
                                     onSelectDate={(value: Date)=> _onChangeDataInicio(index, value)}
                                     formatDate={(date: Date) => date.toLocaleDateString()}
-                                    disabled={isDisabled} />
+                                    disabled={disableDataInicio} />
 
                                 <DatePicker 
                                     value={DataFim} 
@@ -81,7 +82,7 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
                                 <Stack verticalAlign="center">
                                     <Checkbox label="13° salário" 
                                         checked={period.DecimoTerceiro}
-                                        disabled={isDisabled || !enableDecimoTerceiro}
+                                        disabled={disableDecimoTerceiro || !enableDecimoTerceiro}
                                         onChange={(ev, value: boolean) => _onChangeDecimoTerceiro(index, value)} />
                                 </Stack>
 
