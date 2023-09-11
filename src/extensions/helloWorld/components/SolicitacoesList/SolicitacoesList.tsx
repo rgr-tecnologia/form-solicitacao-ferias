@@ -29,12 +29,6 @@ export default function SolicitacoesList(props: ISolititacoesListProps): React.R
             }
         },
         {
-            key: 'column6',
-            name: 'QtdDias',
-            fieldName: 'Qtd. Dias',
-            minWidth: 100,
-        },
-        {
             key: 'column8',
             name: 'Status',
             fieldName: 'Status',

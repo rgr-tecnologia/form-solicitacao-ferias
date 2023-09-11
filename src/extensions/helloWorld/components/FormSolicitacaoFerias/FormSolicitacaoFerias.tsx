@@ -10,7 +10,7 @@ import ViewForm from '../ViewForm/ViewForm'
 
 //Types
 import IListSolicitacaoFeriasItem from '../SoliticitacaoFerias';
-import { Label } from 'office-ui-fabric-react';
+import { DayOfWeek, Label } from 'office-ui-fabric-react';
 import { IFormSolicitacaoFeriasProps } from './FormSolicitacaoFerias.props';
 import { FormButtons } from '../FormButtons/FormButtons';
 
@@ -55,8 +55,24 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     }
   }
 
+  const validateForm = React.useCallback(() => {
+    let errors = []
+
+    errors = formData.periods.reduce((accumulator, period) => {
+      if ((period.DataInicio.getDay() === DayOfWeek.Friday) || 
+        (period.DataInicio.getDay() === DayOfWeek.Saturday)  || 
+        (period.DataInicio.getDay() === DayOfWeek.Sunday) ){          
+          accumulator.push('Não é permitido agendar férias com início às sextas-feiras, sábados ou domingos.')
+      } 
+      
+      return accumulator
+    }, [])
+
+    return errors
+  }, [formData])
+
   const _onSend= (): void => {
-    //const errorList = _validateForm()
+    const errorList = validateForm()
     const isFormValid = errorList.length > 0 ? false : true
 
     if(!isFormValid) {

@@ -129,7 +129,7 @@ export default class HelloWorldFormCustomizer
   }
 
   private async getItemsFromSecondaryList(id: number): Promise<PeriodItem[]> { 
-    const apiUrl =  this.context.pageContext.web.absoluteUrl + `/_api/web/lists(guid'${this.secondaryListId}')/items`
+    const apiUrl =  this.context.pageContext.web.absoluteUrl + `/_api/web/lists(guid'${this.secondaryListId}')/items?$filter=SolicitacaoFeriasId eq ${id}`
 
     const getDataResponse = await this.context.spHttpClient.get(apiUrl, SPHttpClient.configurations.v1)
     const { value }  = await getDataResponse.json()
@@ -226,7 +226,10 @@ export default class HelloWorldFormCustomizer
       this._item.periods = []
     }
     
-    await Promise.all(periods.map(async period => await this.createOnSecondaryList(period)))
+    await Promise.all(periods.map(async period => await this.createOnSecondaryList({
+      ...period,
+      SolicitacaoFeriasId: this.context.pageContext.listItem.id
+    })))
 
     return Promise.resolve()
   }

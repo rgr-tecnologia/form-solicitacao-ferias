@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Checkbox, DatePicker, DayOfWeek, IStackTokens, Label, Stack, Text } from "office-ui-fabric-react";
+import { Checkbox, DatePicker, IStackTokens, Label, Stack, Text } from "office-ui-fabric-react";
 import { PeriodosFeriasListProps } from "./PeriodosFeriasList.props";
 
 export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element {
@@ -15,10 +15,6 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
     }
 
     const _onChangeDataInicio = (index: number, value?: Date): void => {
-        if ((value.getDay() === DayOfWeek.Friday) || (value.getDay() === DayOfWeek.Saturday)  || (value.getDay() === DayOfWeek.Sunday) ){
-            alert('Não é permitido agendar férias com início às sextas-feiras, sábados ou domingos.');            
-            return;
-        }
         onChangeDataInicio(index, value)
     }
 
@@ -73,12 +69,14 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
                                     value={DataInicio} 
                                     minDate={index === 0 ? new Date(new Date().setDate(new Date().getDate() + 60)) : periods[index - 1].DataFim}
                                     onSelectDate={(value: Date)=> _onChangeDataInicio(index, value)}
+                                    formatDate={(date: Date) => date.toLocaleDateString()}
                                     disabled={isDisabled} />
+
                                 <DatePicker 
                                     value={DataFim} 
-                                    minDate={DataFim} 
+                                    minDate={DataFim}
+                                    formatDate={(date: Date) => date.toLocaleDateString()}
                                     disabled />
-                                {/* <TextField value={status} label="Status" readOnly={true} borderless={true}/> */}
 
                                 <Stack verticalAlign="center">
                                     <Checkbox label="13° salário" 
