@@ -188,17 +188,14 @@ export default class HelloWorldFormCustomizer
 
     const responseJSON = postResponse.ok ? await postResponse.json() : Promise.reject(postResponse.statusText)
 
-    const secondaryListPostResponse = periods.map(async period => await this.createOnSecondaryList({
-      ...period,
-      SolicitacaoFeriasId: responseJSON.Id
-    }))
-
-    await Promise.all(secondaryListPostResponse)
-
-    
+    for (const period of periods) {
+      await this.createOnSecondaryList({
+        ...period,
+        SolicitacaoFeriasId: responseJSON.Id
+      })
+    }   
 
     return responseJSON
-    
   }
 
   private async _updateItem(item: IFormSolicitacaoFeriasProps['item']): Promise<any> {
@@ -225,11 +222,13 @@ export default class HelloWorldFormCustomizer
       await Promise.all(this._item.periods.map(async period => await this.deleteItemFromSecondaryList(period.Id)))
       this._item.periods = []
     }
-    
-    await Promise.all(periods.map(async period => await this.createOnSecondaryList({
-      ...period,
-      SolicitacaoFeriasId: this.context.pageContext.listItem.id
-    })))
+
+    for (const period of periods) {
+      await this.createOnSecondaryList({
+        ...period,
+        SolicitacaoFeriasId: this.context.pageContext.listItem.id
+      })
+    }
 
     return Promise.resolve()
   }
