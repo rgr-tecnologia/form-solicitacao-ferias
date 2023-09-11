@@ -224,7 +224,8 @@ export default function CreateForm(props: ICreateFormFeriasProps): React.ReactEl
 
       <Stack>
         <PeriodosFeriasList 
-          isDisabled={false} 
+          disableDataInicio={false} 
+          disableDecimoTerceiro={false}
           periods={periods} 
           onChangeDataInicio={onChangeDataInicio}
           onChangeDecimoTerceiro={onChangeDecimoTerceiro}/>
