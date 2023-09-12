@@ -23,6 +23,7 @@ export default function CreateForm(props: ICreateFormFeriasProps): React.ReactEl
     observacoesRH,
     selectedKey,
     status,
+    onChangeQuantidadeDias,
     onChangeHandler
   } = props
 
@@ -43,9 +44,7 @@ export default function CreateForm(props: ICreateFormFeriasProps): React.ReactEl
 
   const _onChangeQtdDias = (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, option?: IDropdownOption
   ): void => {
-    onChangeHandler({
-      formField: 'QtdDias',
-      value: option.text})
+    onChangeQuantidadeDias(option.text)
   }
 
   let observacoesElement: JSX.Element

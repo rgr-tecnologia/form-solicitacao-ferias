@@ -7,11 +7,15 @@ import { IViewFormSolicitacaoFeriasProps } from './ViewForm.props';
 export default function ViewForm(props: IViewFormSolicitacaoFeriasProps)
 : React.ReactElement<IViewFormSolicitacaoFeriasProps> {
   const { 
-    item,
     isUserManager,
     isMemberOfHR,
     onChangeObservacoesGestor,
-    onChangeObservacaoRH
+    onChangeObservacaoRH,
+    observacoes,
+    observacoesGestor,
+    observacoesRH,
+    quantidadeDias,
+    status,
   } = props
 
   const containerStackTokens: IStackTokens = { childrenGap: 5 };
@@ -20,31 +24,31 @@ export default function ViewForm(props: IViewFormSolicitacaoFeriasProps)
     childrenGap: '1.5rem',
   };
 
-  let observacoes: JSX.Element
+  let observacoesElement: JSX.Element
 
-  if(isUserManager && item.Status === 'In review by manager') {
-    observacoes= (
+  if(isUserManager && status === 'In review by manager') {
+    observacoesElement = (
       <>
         <TextField label="Observações gestor" 
-          value={item.ObservacaoGestor} 
+          value={observacoesGestor} 
           onChange={onChangeObservacoesGestor}
           multiline rows={3}/>
       </>
     )
   }
 
-  else if(isMemberOfHR && item.Status === "In review by HR") {
-    observacoes = ( 
+  else if(isMemberOfHR && status === "In review by HR") {
+    observacoesElement = ( 
         <>
           <>
             <TextField label="Observações gestor" 
-              value={item.ObservacaoGestor} 
+              value={observacoesGestor} 
               onChange={onChangeObservacoesGestor}
               disabled={true}
               multiline rows={3}/>
           </>
           <TextField label="Observações RH" 
-            value={item.ObservacaoRH} 
+            value={observacoesRH}
             onChange={onChangeObservacaoRH}
             multiline rows={3}/>
         </>
@@ -59,12 +63,12 @@ export default function ViewForm(props: IViewFormSolicitacaoFeriasProps)
 
       <Stack>
         <Label>Opções de férias</Label>
-        <TextField disabled defaultValue={item.QtdDias} />
+        <TextField disabled defaultValue={quantidadeDias} />
       </Stack>
 
       <Stack>
         <TextField label="Observações" 
-              value={item.Observacao} 
+              value={observacoes} 
               onChange={onChangeObservacaoRH}
               disabled={true}
               multiline 
@@ -73,7 +77,7 @@ export default function ViewForm(props: IViewFormSolicitacaoFeriasProps)
 
       <Stack 
         tokens={spacingStackTokens}>
-          {observacoes}
+          {observacoesElement}
       </Stack>
     </Stack>
   );
