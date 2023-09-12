@@ -161,11 +161,12 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     const updatedPeriods = periodsToUpdate.reduce((accumulator, _, index) => {
       const {
         totalDias
-      } = currentOption.periods[index + totalPeriodsToUpdate]
+      } = currentOption.periods[index + newPeriods.length - totalPeriodsToUpdate]
 
       const DataInicio = index === 0 ? 
-        newPeriods[totalPeriodsToUpdate - 2].DataFim : 
+        newPeriods[newPeriods.length - totalPeriodsToUpdate - 1].DataFim :
         accumulator[index - 1].DataFim
+
       const DataFim = new Date(DataInicio.getTime())
       DataFim.setDate(DataFim.getDate() + totalDias)
 
