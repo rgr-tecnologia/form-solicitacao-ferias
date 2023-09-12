@@ -3,7 +3,6 @@ import * as React from 'react';
 import { Text } from '@fluentui/react/lib/Text';
 import { Label, Stack, IStackTokens, TextField } from 'office-ui-fabric-react';
 import { IViewFormSolicitacaoFeriasProps } from './ViewForm.props';
-import { PeriodosFeriasList } from '../PeriodosFeriasList/PeriodosFeriasList';
 
 export default function ViewForm(props: IViewFormSolicitacaoFeriasProps)
 : React.ReactElement<IViewFormSolicitacaoFeriasProps> {
@@ -14,10 +13,6 @@ export default function ViewForm(props: IViewFormSolicitacaoFeriasProps)
     onChangeObservacoesGestor,
     onChangeObservacaoRH
   } = props
-
-  const {
-    periods
-  } = item
 
   const containerStackTokens: IStackTokens = { childrenGap: 5 };
 
@@ -79,13 +74,6 @@ export default function ViewForm(props: IViewFormSolicitacaoFeriasProps)
       <Stack 
         tokens={spacingStackTokens}>
           {observacoes}
-      </Stack>
-
-      <Stack>
-        <PeriodosFeriasList 
-          disableDataInicio={isMemberOfHR && item.Status === "In review by HR"}
-          disableDecimoTerceiro={true} 
-          periods={periods}/>
       </Stack>
     </Stack>
   );

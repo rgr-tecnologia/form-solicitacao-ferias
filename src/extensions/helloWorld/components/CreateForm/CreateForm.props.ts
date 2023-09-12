@@ -1,10 +1,12 @@
 //Types
-import { FormCustomizerContext } from '@microsoft/sp-listview-extensibility';
-import IListSolicitacaoFeriasItem from '../SoliticitacaoFerias';
 import { IFormOnChangeHandlerProps } from '../FormSolicitacaoFerias/FormSolicitacaoFerias'
+import { StatusSolicitacaoFerias } from '../../../../enums/StatusSolicitacaoFerias';
 
 export interface ICreateFormFeriasProps {
-  context: FormCustomizerContext;
-  item: IListSolicitacaoFeriasItem;
+  observacoes: string;
+  observacoesGestor: string;
+  observacoesRH: string;
+  selectedKey: number,
+  status: StatusSolicitacaoFerias,
   onChangeHandler: (props: IFormOnChangeHandlerProps) => void;
 }

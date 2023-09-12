@@ -14,6 +14,7 @@ export function FormButtons(props: FormButtons): JSX.Element {
         onRejectManager,
         onApproveHR,
         onRejectHR,
+        onSaveHR
     } = props
 
     let buttonsElement: JSX.Element
@@ -48,7 +49,7 @@ export function FormButtons(props: FormButtons): JSX.Element {
     else if(isMemberOfHR && status === 'Approved by HR') {
       buttonsElement = (
         <>
-          <PrimaryButton text='Salvar' onClick={onApproveHR}/>
+          <PrimaryButton text='Salvar' onClick={onSaveHR}/>
         </>
       )      
     }

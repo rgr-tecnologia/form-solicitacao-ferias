@@ -1,9 +1,9 @@
 import React from 'react';
-import { QuantidadeDiasOptions } from "../enums/QuantidadeDiasOptions";
+import { QuantidadeDiasOption } from "../enums/QuantidadeDiasOption";
 
 
-export function useQuantidadeDiasOptions(): QuantidadeDiasOptions[] {
-    const useQuantidadeDiasOptions: QuantidadeDiasOptions[] = React.useMemo(() => {
+export function useQuantidadeDiasOptions(): QuantidadeDiasOption[] {
+    const useQuantidadeDiasOptions: QuantidadeDiasOption[] = React.useMemo(() => {
       return [
         {
           text: '30 dias de descanso',

@@ -1,6 +1,6 @@
-export interface QuantidadeDiasOptions {
+export interface QuantidadeDiasOption {
     periods: Period[]
-    text: QuantidadeDiasOptionsText,
+    text: QuantidadeDiasOptionText,
     totalDiasAbono: number,
 }
 
@@ -8,7 +8,7 @@ interface Period {
     totalDias: number,    
 }
 
-type QuantidadeDiasOptionsText = 
+type QuantidadeDiasOptionText = 
     '30 dias de descanso' |
     '20 dias de descanso + 10 dias de descanso' |
     '20 dias de descanso + 10 dias de abono' |
