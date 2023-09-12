@@ -267,7 +267,7 @@ export default class HelloWorldFormCustomizer
             GestorId: managerProfile.Id,
             AbonoQuantidadeDias: 0,
             Observacao: null,
-            QtdDias: null,
+            QtdDias: '30 dias de descanso',
             AuthorId: null,
             ObservacaoGestor: null,
             ObservacaoRH: null,

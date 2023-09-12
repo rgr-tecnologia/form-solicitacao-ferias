@@ -8,7 +8,7 @@ interface Period {
     totalDias: number,    
 }
 
-type QuantidadeDiasOptionText = 
+export type QuantidadeDiasOptionText = 
     '30 dias de descanso' |
     '20 dias de descanso + 10 dias de descanso' |
     '20 dias de descanso + 10 dias de abono' |
