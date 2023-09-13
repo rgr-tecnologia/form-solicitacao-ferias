@@ -56,6 +56,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
   }, [])
 
   const [periodos, setPeriodos] = React.useState<PeriodItem[]>(periods)
+  
 
   const createPeriods = React.useCallback((quantidadeDias: QuantidadeDiasOption, minDate: Date) => {
     const { periods } = quantidadeDias
@@ -89,6 +90,18 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
       periods: periodos
     })
   }, [periodos])
+
+  React.useEffect(() => {
+    if(!formData.periods || formData.periods.length === 0) {
+      const selectedQuantidadeDias = QuantidadeDiasOptions.find((option) => {
+        return option.text === formData.QtdDias
+      })
+  
+      const newPeriods = createPeriods(selectedQuantidadeDias, minDate)
+  
+      setPeriodos(newPeriods)
+    }
+  }, [formData.periods])
 
   const enableDataInicio = 
     formData.Status === 'Draft' || 
