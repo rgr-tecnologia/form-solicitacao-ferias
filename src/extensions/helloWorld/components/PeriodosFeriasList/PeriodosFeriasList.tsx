@@ -9,6 +9,7 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
         onChangeDecimoTerceiro,
         disableDataInicio,
         disableDecimoTerceiro,
+        minDate,
     } = props
 
     const tokens: IStackTokens = {
@@ -68,14 +69,13 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
 
                                 <DatePicker 
                                     value={DataInicio} 
-                                    minDate={index === 0 ? new Date(new Date().setDate(new Date().getDate() + 60)) : periods[index - 1].DataFim}
+                                    minDate={index === 0 ? minDate : periods[index-1].DataFim}
                                     onSelectDate={(value: Date)=> _onChangeDataInicio(index, value)}
                                     formatDate={(date: Date) => date.toLocaleDateString()}
                                     disabled={disableDataInicio} />
 
                                 <DatePicker 
-                                    value={DataFim} 
-                                    minDate={DataFim}
+                                    value={DataFim}
                                     formatDate={(date: Date) => date.toLocaleDateString()}
                                     disabled />
 

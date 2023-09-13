@@ -14,9 +14,9 @@ import { DayOfWeek, Label } from 'office-ui-fabric-react';
 import { IFormSolicitacaoFeriasProps } from './FormSolicitacaoFerias.props';
 import { FormButtons } from '../FormButtons/FormButtons';
 import { useQuantidadeDiasOptions } from '../../../../hooks/useQuantidadeDiasOptions';
-import { PeriodItem } from '../PeriodosFeriasList/PeriodosFeriasList.props';
 import { PeriodosFeriasList } from '../PeriodosFeriasList/PeriodosFeriasList';
 import { QuantidadeDiasOptionText } from '../../../../enums/QuantidadeDiasOption';
+import { usePeriodos } from '../../../../hooks/usePeriodos';
 
 export interface IFormOnChangeHandlerProps {
   formField: keyof IListSolicitacaoFeriasItem;
@@ -40,10 +40,42 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     Status
   } = item
 
+  
   const [formData, setFormData] = React.useState<IListSolicitacaoFeriasItem>(item)
   const [errorList, setErrorlist] = React.useState<string[]>([])
 
   const QuantidadeDiasOptions = useQuantidadeDiasOptions()
+  const selectedQuantidadeDias = React.useMemo(() => {
+    return QuantidadeDiasOptions.find((option) => {
+      return option.text === formData.QtdDias
+    })
+  }, [formData.QtdDias])
+
+  const minDate = React.useMemo(() => {    
+    const minDate = formData.Status === 'Approved by HR' && isMemberOfHR ? new Date() : new Date(new Date().setDate(new Date().getDate() + 60))
+
+    return minDate
+  }, [])
+
+  const [periodos, setPeriodos] = usePeriodos([...formData.periods], selectedQuantidadeDias, minDate)
+
+  React.useEffect(() => {
+    setFormData({
+      ...formData,
+      periods: periodos
+    })
+  }, [periodos])
+
+  const enableDataInicio = 
+    formData.Status === 'Draft' || 
+    formData.Status === 'Rejected by HR' || 
+    formData.Status === 'Rejected by manager' && isAuthor ||
+    formData.Status === 'Approved by HR' && isMemberOfHR
+
+  const enableDecimoTerceiro = 
+    formData.Status === 'Draft' || 
+    formData.Status === 'Rejected by HR' || 
+    formData.Status === 'Rejected by manager' && isAuthor 
 
   const containerStackTokens: IStackTokens = { 
     childrenGap: 5,
@@ -149,36 +181,11 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
   }) 
 
   const onChangeQtdDias = (selectedOptionText: QuantidadeDiasOptionText) => {
-    const { periods, totalDiasAbono } = QuantidadeDiasOptions.find((option) => {
-      return option.text === selectedOptionText
-    })
-    
-    const totalPeriods = periods.length;
-
-    const newPeriods = [...new Array(totalPeriods)]
-
-    const dataToSet: PeriodItem[] = newPeriods.reduce((accumulator: PeriodItem[], _, index) => {
-      const periodoAtual = periods[index]
-      const periodoAnterior = accumulator[index-1]
-
-      const currentDate = new Date()
-      const DataInicio = index === 0 ? new Date(currentDate.setDate(currentDate.getDate() + 60)) : periodoAnterior.DataFim
-      const DataFim = new Date(DataInicio.getTime())
-      DataFim.setDate(DataFim.getDate() + periodoAtual.totalDias)
-
-      accumulator.push({
-        DataInicio,
-        DataFim,
-        DecimoTerceiro: false
-      })
-
-      return accumulator
-    }, [])
+    const { totalDiasAbono } = selectedQuantidadeDias
 
     setFormData({
       ...formData,
       'AbonoQuantidadeDias': totalDiasAbono,
-      'periods': dataToSet,
       'QtdDias': selectedOptionText
     })
   }
@@ -218,10 +225,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
 
     const updatedPeriodsToSet = [...newPeriods.slice(0, index + 1), ...updatedPeriods]
 
-    _onChange({
-      formField: 'periods',
-      value: updatedPeriodsToSet
-    })
+    setPeriodos(updatedPeriodsToSet)
   }
 
   const onChangeDecimoTerceiro = (index: number, value: boolean): void => {
@@ -262,17 +266,6 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
         isMemberOfHR={isMemberOfHR}/>
   }
 
-  const enableDataInicio = 
-    formData.Status === 'Draft' || 
-    formData.Status === 'Rejected by HR' || 
-    formData.Status === 'Rejected by manager' && isAuthor ||
-    formData.Status === 'Approved by HR' && isMemberOfHR
-
-  const enableDecimoTerceiro = 
-    formData.Status === 'Draft' || 
-    formData.Status === 'Rejected by HR' || 
-    formData.Status === 'Rejected by manager' && isAuthor 
-
   return (
     <Stack
       horizontalAlign='center'>
@@ -288,9 +281,10 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
 
         <Stack>
           <PeriodosFeriasList 
+            periods={formData.periods}
             disableDataInicio={!enableDataInicio} 
             disableDecimoTerceiro={!enableDecimoTerceiro}
-            periods={formData.periods} 
+            minDate={minDate}
             onChangeDataInicio={onChangeDataInicio}
             onChangeDecimoTerceiro={onChangeDecimoTerceiro}/>
         </Stack>

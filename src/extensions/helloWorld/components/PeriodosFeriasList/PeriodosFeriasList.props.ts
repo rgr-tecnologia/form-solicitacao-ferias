@@ -2,6 +2,7 @@ export interface PeriodosFeriasListProps {
     periods: PeriodItem[];
     disableDataInicio: boolean;
     disableDecimoTerceiro: boolean;
+    minDate: Date;
     onChangeDataInicio?: (index: number, newDate: Date) => void;
     onChangeDecimoTerceiro?: (index: number, newValue: boolean) => void;
 }
