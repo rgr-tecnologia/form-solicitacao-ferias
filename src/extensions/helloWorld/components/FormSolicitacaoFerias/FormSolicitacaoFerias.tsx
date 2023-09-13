@@ -16,7 +16,8 @@ import { FormButtons } from '../FormButtons/FormButtons';
 import { useQuantidadeDiasOptions } from '../../../../hooks/useQuantidadeDiasOptions';
 import { PeriodosFeriasList } from '../PeriodosFeriasList/PeriodosFeriasList';
 import { QuantidadeDiasOptionText } from '../../../../enums/QuantidadeDiasOption';
-import { usePeriodos } from '../../../../hooks/usePeriodos';
+import { useCreatePeriods } from '../../../../hooks/useCreatePeriods';
+import { PeriodItem } from '../PeriodosFeriasList/PeriodosFeriasList.props';
 
 export interface IFormOnChangeHandlerProps {
   formField: keyof IListSolicitacaoFeriasItem;
@@ -37,7 +38,8 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
   } = props
 
   const {
-    Status
+    Status,
+    periods
   } = item
 
   
@@ -57,7 +59,9 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     return minDate
   }, [])
 
-  const [periodos, setPeriodos] = usePeriodos([...formData.periods], selectedQuantidadeDias, minDate)
+  const [periodos, setPeriodos] = React.useState<PeriodItem[]>(periods)
+
+  //const [periodos, setPeriodos] = usePeriodos([...formData.periods], selectedQuantidadeDias, minDate)
 
   React.useEffect(() => {
     setFormData({
@@ -75,7 +79,8 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
   const enableDecimoTerceiro = 
     formData.Status === 'Draft' || 
     formData.Status === 'Rejected by HR' || 
-    formData.Status === 'Rejected by manager' && isAuthor 
+    formData.Status === 'Rejected by manager' && isAuthor ||
+    formData.Status === 'Approved by HR' && isMemberOfHR
 
   const containerStackTokens: IStackTokens = { 
     childrenGap: 5,
@@ -92,7 +97,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     }
   }
 
-  const validateForm = React.useCallback(() => {
+  const validateDataInicio = React.useCallback(() => {
     let errors = []
 
     errors = formData.periods.reduce((accumulator, period) => {
@@ -108,8 +113,38 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     return errors
   }, [formData])
 
+  const validateObservacao = React.useCallback(() => {
+    let errors = []
+
+    if (!formData.Observacao) {
+      errors.push('O campo "Observações" é obrigatório.')
+    }
+
+    return errors
+  }, [formData.Observacao])
+
+  const validateObservacaoGestor = React.useCallback(() => {
+    let errors = []
+
+    if (!formData.ObservacaoGestor) {
+      errors.push('O campo "Observações gestor" é obrigatório.')
+    }
+
+    return errors
+  }, [formData.ObservacaoGestor])
+
+  const validateObservacaoRH = React.useCallback(() => {
+    let errors = []
+
+    if (!formData.ObservacaoRH) {
+      errors.push('O campo "Observações RH" é obrigatório.')
+    }
+
+    return errors
+  }, [formData.ObservacaoRH])
+
   const _onSend= (): void => {
-    const errorList = validateForm()
+    const errorList = [...validateDataInicio(), ...validateObservacao()]
     const isFormValid = errorList.length > 0 ? false : true
 
     if(!isFormValid) {
@@ -124,31 +159,63 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
   }
 
   const onApproveManager= (): void => {
+    const errorList = [...validateObservacaoGestor()]
+    const isFormValid = errorList.length > 0 ? false : true
+
+    if(!isFormValid) {
+      setErrorlist(errorList)
+      throw Error(errorList[0]);
+    }
+
     formData.Status= 'Approved by manager'
   
     onSave(formData)
   }
 
   const onRejectManager= (): void => {
+    const errorList = [...validateObservacaoGestor()]
+    const isFormValid = errorList.length > 0 ? false : true
+
+    if(!isFormValid) {
+      setErrorlist(errorList)
+      throw Error(errorList[0]);
+    }
+
     formData.Status= 'Rejected by manager'
     
     onSave(formData)
   }
 
   const onApproveHR= (): void => {
+    const errorList = [...validateObservacaoRH()]
+    const isFormValid = errorList.length > 0 ? false : true
+
+    if(!isFormValid) {
+      setErrorlist(errorList)
+      throw Error(errorList[0]);
+    }
+
     formData.Status= 'Approved by HR'
   
     onSave(formData)
   }
 
   const onRejectHR= (): void => {
+    const errorList = [...validateObservacaoRH()]
+    const isFormValid = errorList.length > 0 ? false : true
+
+    if(!isFormValid) {
+      setErrorlist(errorList)
+      throw Error(errorList[0]);
+    }
+    
     formData.Status= 'Rejected by HR'
   
     onSave(formData)
   }
 
   const onSaveHR= (): void => {
-    const errorList = validateForm()
+    const errorList = validateDataInicio()
     const isFormValid = errorList.length > 0 ? false : true
 
     if(!isFormValid) {
@@ -182,6 +249,10 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
 
   const onChangeQtdDias = (selectedOptionText: QuantidadeDiasOptionText) => {
     const { totalDiasAbono } = selectedQuantidadeDias
+
+    const newPeriods = useCreatePeriods(selectedQuantidadeDias, minDate)
+
+    setPeriodos(newPeriods)
 
     setFormData({
       ...formData,
