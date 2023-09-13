@@ -1,28 +1,43 @@
 import * as React from 'react';
 
 import { Text } from '@fluentui/react/lib/Text';
-import { Label, Stack, IStackTokens, TextField } from 'office-ui-fabric-react';
+import { Stack, IStackTokens, TextField, Dropdown, IDropdownOption } from 'office-ui-fabric-react';
 import { IViewFormSolicitacaoFeriasProps } from './ViewForm.props';
+import { useQuantidadeDiasOptions } from '../../../../hooks/useQuantidadeDiasOptions';
 
 export default function ViewForm(props: IViewFormSolicitacaoFeriasProps)
 : React.ReactElement<IViewFormSolicitacaoFeriasProps> {
   const { 
     isUserManager,
     isMemberOfHR,
-    onChangeObservacoesGestor,
-    onChangeObservacaoRH,
     observacoes,
     observacoesGestor,
     observacoesRH,
-    quantidadeDias,
     status,
+    selectedKey,
+    onChangeQuantidadeDias,
+    onChangeObservacoesGestor,
+    onChangeObservacaoRH
   } = props
+
+  const QuantidadeDiasOptions = useQuantidadeDiasOptions()
+
+  const dropdownQuantidadeDiasOptions: IDropdownOption[] = React.useMemo(() => {
+    return QuantidadeDiasOptions.map((option, index) => ({
+      key: index,
+      text: option.text
+    }))
+  }, [QuantidadeDiasOptions])
 
   const containerStackTokens: IStackTokens = { childrenGap: 5 };
 
   const spacingStackTokens: IStackTokens = {
     childrenGap: '1.5rem',
   };
+
+  const _onChangeQtdDias = (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, option?: IDropdownOption) : void => {
+    onChangeQuantidadeDias(option.text)
+  }
 
   let observacoesElement: JSX.Element
 
@@ -40,19 +55,42 @@ export default function ViewForm(props: IViewFormSolicitacaoFeriasProps)
   else if(isMemberOfHR && status === "In review by HR") {
     observacoesElement = ( 
         <>
-          <>
-            <TextField label="Observações gestor" 
-              value={observacoesGestor} 
-              onChange={onChangeObservacoesGestor}
-              disabled={true}
-              multiline rows={3}/>
-          </>
+          <TextField label="Observações gestor" 
+            value={observacoesGestor} 
+            onChange={onChangeObservacoesGestor}
+            disabled={true}
+            multiline rows={3}/>
           <TextField label="Observações RH" 
             value={observacoesRH}
             onChange={onChangeObservacaoRH}
             multiline rows={3}/>
         </>
       )    
+  }
+
+  let opcoesFeriasElement: JSX.Element;
+
+  if(isMemberOfHR && status === "Approved by HR" || status === "Edited by HR") {
+    opcoesFeriasElement = (
+      <>
+        <Dropdown
+          label='Opções de férias'
+          options={dropdownQuantidadeDiasOptions}
+          onChange={_onChangeQtdDias}
+          selectedKey={selectedKey} />
+      </>
+    )
+  }
+  else {
+    opcoesFeriasElement = (
+      <>
+        <Dropdown
+          label='Opções de férias'
+          options={dropdownQuantidadeDiasOptions}
+          selectedKey={selectedKey} 
+          disabled={true}/>
+      </>
+    )
   }
 
   return (
@@ -62,8 +100,7 @@ export default function ViewForm(props: IViewFormSolicitacaoFeriasProps)
       </Stack>
 
       <Stack>
-        <Label>Opções de férias</Label>
-        <TextField disabled defaultValue={quantidadeDias} />
+        {opcoesFeriasElement}
       </Stack>
 
       <Stack>

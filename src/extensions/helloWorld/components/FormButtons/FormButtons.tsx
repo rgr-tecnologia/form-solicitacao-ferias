@@ -46,7 +46,7 @@ export function FormButtons(props: FormButtons): JSX.Element {
       )      
     }
 
-    else if(isMemberOfHR && status === 'Approved by HR') {
+    else if(isMemberOfHR && status === 'Approved by HR' || status == 'Edited by HR') {
       buttonsElement = (
         <>
           <PrimaryButton text='Salvar' onClick={onSaveHR}/>

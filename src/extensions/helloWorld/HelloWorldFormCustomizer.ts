@@ -51,10 +51,10 @@ export default class HelloWorldFormCustomizer
   private _userItems: IFormSolicitacaoFeriasProps["item"][];
 
   private async _getManagerProfile(): Promise<{Id: number}> {    
-    const {
+    let {
       loginName 
     } = this.context.pageContext.user
-
+    
     const response = await this.context.spHttpClient
       .get(
         this.context.pageContext.web.absoluteUrl + `/_api/web/lists/getbytitle('${this._allUsersList.title}')/items?$filter=LoginName eq '${loginName}'&$top=1`,
