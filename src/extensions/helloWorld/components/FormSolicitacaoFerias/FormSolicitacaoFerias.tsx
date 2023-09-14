@@ -85,13 +85,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     })
   }, [formData.QtdDias])
 
-  const enableDataInicio = 
-    formData.Status === 'Draft' || 
-    formData.Status === 'Rejected by HR' || 
-    formData.Status === 'Rejected by manager' && isAuthor ||
-    formData.Status === 'Approved by HR' || formData.Status === 'Edited by HR' && isMemberOfHR
-
-  const enableDecimoTerceiro = 
+  const disableFields = 
     formData.Status === 'Draft' || 
     formData.Status === 'Rejected by HR' || 
     formData.Status === 'Rejected by manager' && isAuthor ||
@@ -423,8 +417,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
         <Stack>
           <PeriodosFeriasList 
             periods={periodos}
-            disableDataInicio={!enableDataInicio} 
-            disableDecimoTerceiro={!enableDecimoTerceiro}
+            disableFields={!disableFields} 
             minDate={minDate}
             options={periodosOptions}
             onChangeDataInicio={onChangeDataInicio}

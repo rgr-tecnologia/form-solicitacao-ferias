@@ -2,8 +2,7 @@ import { IDropdownOption } from "office-ui-fabric-react";
 
 export interface PeriodosFeriasListProps {
     periods: PeriodItem[];
-    disableDataInicio: boolean;
-    disableDecimoTerceiro: boolean;
+    disableFields: boolean;
     minDate: Date;
     options: IDropdownOption[];
     onChangeDataInicio?: (index: number, newDate: Date) => void;

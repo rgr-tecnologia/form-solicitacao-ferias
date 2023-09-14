@@ -8,8 +8,7 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
         onChangeDataInicio,
         onChangeDecimoTerceiro,
         onChangeQuantidadeDias,
-        disableDataInicio,
-        disableDecimoTerceiro,
+        disableFields,
         minDate,
         options
     } = props
@@ -78,6 +77,7 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
                                     options={options}
                                     selectedKey={selectedKey}
                                     onChange={(ev, option) => onChangeQuantidadeDias(index, option)}
+                                    disabled={disableFields}
                                 />
 
                                 <DatePicker 
@@ -85,7 +85,7 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
                                     minDate={index === 0 ? minDate : periods[index-1].DataFim}
                                     onSelectDate={(value: Date)=> _onChangeDataInicio(index, value)}
                                     formatDate={(date: Date) => date.toLocaleDateString()}
-                                    disabled={disableDataInicio} />
+                                    disabled={disableFields} />
 
                                 <DatePicker 
                                     value={DataFim}
@@ -95,7 +95,7 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
                                 <Stack verticalAlign="center">
                                     <Checkbox label="13° salário" 
                                         checked={period.DecimoTerceiro}
-                                        disabled={disableDecimoTerceiro || !enableDecimoTerceiro}
+                                        disabled={disableFields || !enableDecimoTerceiro}
                                         onChange={(ev, value: boolean) => _onChangeDecimoTerceiro(index, value)} />
                                 </Stack>
                             </Stack>
