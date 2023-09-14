@@ -1,7 +1,5 @@
 import { QuantidadeDiasOptionText } from "../../../enums/QuantidadeDiasOption";
 import { StatusSolicitacaoFerias } from "../../../enums/StatusSolicitacaoFerias";
-import { PeriodItem } from "./PeriodosFeriasList/PeriodosFeriasList.props";
-
 export default interface IListSolicitacaoFeriasItem {
     Id?: number;
     AbonoQuantidadeDias: number;
@@ -13,5 +11,4 @@ export default interface IListSolicitacaoFeriasItem {
     ObservacaoRH: string;
     QtdDias: QuantidadeDiasOptionText;
     Status: StatusSolicitacaoFerias;
-    periods: PeriodItem[]
 }

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Checkbox, DatePicker, IStackTokens, Label, Stack, Text } from "office-ui-fabric-react";
+import { Checkbox, DatePicker, Dropdown, IStackTokens, Label, Stack, Text } from "office-ui-fabric-react";
 import { PeriodosFeriasListProps } from "./PeriodosFeriasList.props";
 
 export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element {
@@ -7,9 +7,11 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
         periods,
         onChangeDataInicio,
         onChangeDecimoTerceiro,
+        onChangeQuantidadeDias,
         disableDataInicio,
         disableDecimoTerceiro,
         minDate,
+        options
     } = props
 
     const tokens: IStackTokens = {
@@ -35,6 +37,9 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
                     <Label>Período</Label>
                 </Stack>
                 <Stack>
+                    <Label>Quantidade de dias</Label>
+                </Stack>
+                <Stack>
                     <Label>Data Início</Label>
                 </Stack>
                 <Stack>
@@ -49,9 +54,11 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
                     const {
                         DataInicio,
                         DataFim,
+                        QuantidadeDias,
                     } = period
 
                     const enableDecimoTerceiro = DataInicio.getMonth() >= 1 && DataInicio.getMonth() <= 9
+                    const selectedKey = options.find(option => option.text === QuantidadeDias?.toString())?.key ?? null
 
                     return (
                         <>                        
@@ -66,6 +73,12 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
                                         {index + 1}° período
                                     </Text>
                                 </Stack>
+
+                                <Dropdown 
+                                    options={options}
+                                    selectedKey={selectedKey}
+                                    onChange={(ev, option) => onChangeQuantidadeDias(index, option)}
+                                />
 
                                 <DatePicker 
                                     value={DataInicio} 
@@ -85,7 +98,6 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
                                         disabled={disableDecimoTerceiro || !enableDecimoTerceiro}
                                         onChange={(ev, value: boolean) => _onChangeDecimoTerceiro(index, value)} />
                                 </Stack>
-
                             </Stack>
                         </>
                     )

@@ -35,6 +35,7 @@ export default class HelloWorldFormCustomizer
 
   // Added for the item to show in the form; use with edit and view form
   private _item: IFormSolicitacaoFeriasProps['item'];
+  private _periods: IFormSolicitacaoFeriasProps['periods'] = [];
 
   private secondaryListId: string = 'ff367779-18a9-43f1-8ffc-7237dc66ec80'
 
@@ -51,7 +52,7 @@ export default class HelloWorldFormCustomizer
   private _userItems: IFormSolicitacaoFeriasProps["item"][];
 
   private async _getManagerProfile(): Promise<{Id: number}> {    
-    let {
+    const {
       loginName 
     } = this.context.pageContext.user
     
@@ -165,10 +166,9 @@ export default class HelloWorldFormCustomizer
     }
   }
 
-  private async _createItem(item: IFormSolicitacaoFeriasProps['item']): Promise<IFormSolicitacaoFeriasProps['item']> {
+  private async _createItem(item: IFormSolicitacaoFeriasProps['item'], periods: IFormSolicitacaoFeriasProps['periods']) {
     const { guid } = this.context.list;
     const {
-      periods,
       Created,
       ...itemToSave
     } = item
@@ -194,10 +194,9 @@ export default class HelloWorldFormCustomizer
     return responseJSON
   }
 
-  private async _updateItem(item: IFormSolicitacaoFeriasProps['item']): Promise<any> {
+  private async _updateItem(item: IFormSolicitacaoFeriasProps['item'], periods: IFormSolicitacaoFeriasProps['periods']): Promise<any> {
     const { guid } = this.context.list;
     const {
-      periods,
       Created,
       ...itemToSave
     } = item
@@ -214,9 +213,9 @@ export default class HelloWorldFormCustomizer
       body: JSON.stringify(itemToSave)
     });
 
-    if(this._item.periods.length > 0) {
-      await Promise.all(this._item.periods.map(async period => await this.deleteItemFromSecondaryList(period.Id)))
-      this._item.periods = []
+    if(this._periods.length > 0) {
+      await Promise.all(this._periods.map(async period => await this.deleteItemFromSecondaryList(period.Id)))
+      this._periods = []
     }
 
     for (const period of periods) {
@@ -271,7 +270,6 @@ export default class HelloWorldFormCustomizer
             AuthorId: null,
             ObservacaoGestor: null,
             ObservacaoRH: null,
-            periods: [],
             Created: new Date().toISOString(),
           }        
 
@@ -297,7 +295,7 @@ export default class HelloWorldFormCustomizer
           ...currentItemData,
         }
 
-        this._item.periods = await this.getItemsFromSecondaryList(this.context.pageContext.listItem.id)
+        this._periods = await this.getItemsFromSecondaryList(this.context.pageContext.listItem.id)
 
         const userItems = await this._getUserItems(currentItemData.AuthorId)
 
@@ -343,6 +341,7 @@ export default class HelloWorldFormCustomizer
         isMemberOfHR: this._isMemberOfHR,
         isAuthor: this._item.AuthorId === this.context.pageContext.legacyPageContext.userId,
         userItems: this._userItems,
+        periods: this._periods,
        } as IFormSolicitacaoFeriasProps);
 
     ReactDOM.render(helloWorld, this.domElement);
@@ -354,12 +353,12 @@ export default class HelloWorldFormCustomizer
     super.onDispose();
   }
 
-  private _onSave = async (item: IFormSolicitacaoFeriasProps['item']): Promise<Promise<void>> => {
+  private _onSave = async (item: IFormSolicitacaoFeriasProps['item'], periods: IFormSolicitacaoFeriasProps['periods']): Promise<Promise<void>> => {
     if(this.displayMode === FormDisplayMode.New) {
-      await this._createItem(item);
+      await this._createItem(item, periods);
     }
     else {
-      await this._updateItem(item);
+      await this._updateItem(item, periods);
     }
 
     window.location.reload()

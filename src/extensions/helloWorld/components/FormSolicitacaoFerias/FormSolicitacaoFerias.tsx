@@ -10,7 +10,7 @@ import ViewForm from '../ViewForm/ViewForm'
 
 //Types
 import IListSolicitacaoFeriasItem from '../SoliticitacaoFerias';
-import { DayOfWeek, Label } from 'office-ui-fabric-react';
+import { DayOfWeek, IDropdownOption, Label } from 'office-ui-fabric-react';
 import { IFormSolicitacaoFeriasProps } from './FormSolicitacaoFerias.props';
 import { FormButtons } from '../FormButtons/FormButtons';
 import { useQuantidadeDiasOptions } from '../../../../hooks/useQuantidadeDiasOptions';
@@ -27,18 +27,18 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
 : React.ReactElement<IFormSolicitacaoFeriasProps> {
   const {
     displayMode,
-    onSave,
+    onSave: _onSave,
     onClose,
     isUserManager,
     isMemberOfHR,
     isAuthor,
     userItems,
     item,
+    periods
   } = props
 
   const {
     Status,
-    periods
   } = item
   
   const [formData, setFormData] = React.useState<IListSolicitacaoFeriasItem>(item)
@@ -50,70 +50,52 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     const minDate = 
       formData.Status === 'Approved by HR' || 
       formData.Status === 'Edited by HR' && isMemberOfHR ? 
-      new Date() : new Date(new Date().setDate(new Date().getDate() + 60))
+      new Date() : new Date(new Date().setDate(new Date().getDate() + 45))
 
     return minDate
   }, [])
 
-  const [periodos, setPeriodos] = React.useState<PeriodItem[]>(periods)
-  
-
   const createPeriods = React.useCallback((quantidadeDias: QuantidadeDiasOption, minDate: Date) => {
-    const { periods } = quantidadeDias
-    const totalPeriods = periods.length;
+    const { totalPeriods } = quantidadeDias
+    const DataInicio = minDate
+    const DataFim = minDate
   
-    const basePeriods = [...new Array(totalPeriods)]
-  
-    const newPeriods: PeriodItem[] = basePeriods.reduce((accumulator: PeriodItem[], _, index) => {
-      const periodoAtual = periods[index]
-      const periodoAnterior = accumulator[index-1]
-  
-      const DataInicio = index === 0 ? minDate : periodoAnterior.DataFim
-      const DataFim = new Date(DataInicio.getTime())
-      DataFim.setDate(DataFim.getDate() + periodoAtual.totalDias)
-  
-      accumulator.push({
-        DataInicio,
-        DataFim,
-        DecimoTerceiro: false
-      })
-  
-      return accumulator
-    }, [])
+    const newPeriods: PeriodItem[] = [...new Array(totalPeriods)].fill({}).map(() => ({
+      DataInicio,
+      DataFim,
+      DecimoTerceiro: false,
+      QuantidadeDias: null
+    }))
   
     return newPeriods
   }, [formData.QtdDias, minDate])
 
-  React.useEffect(() => {
-    setFormData({
-      ...formData,
-      periods: periodos
-    })
-  }, [periodos])
+  const [periodos, setPeriodos] = React.useState<PeriodItem[]>(periods.length ? periods : createPeriods(QuantidadeDiasOptions[0], minDate))
 
-  React.useEffect(() => {
-    if(!formData.periods || formData.periods.length === 0) {
-      const selectedQuantidadeDias = QuantidadeDiasOptions.find((option) => {
-        return option.text === formData.QtdDias
-      })
-  
-      const newPeriods = createPeriods(selectedQuantidadeDias, minDate)
-  
-      setPeriodos(newPeriods)
-    }
-  }, [formData.periods])
+  const periodosOptions = React.useMemo(() => {
+    const selectedQuantidadeDias =  QuantidadeDiasOptions.find((option) => {
+      return option.text === formData.QtdDias
+    })
+
+    return selectedQuantidadeDias.options.map((option, index) => {
+      return {
+        key: index,
+        text: option.totalDias.toString()
+      }
+    })
+  }, [formData.QtdDias])
 
   const enableDataInicio = 
     formData.Status === 'Draft' || 
     formData.Status === 'Rejected by HR' || 
     formData.Status === 'Rejected by manager' && isAuthor ||
-    formData.Status === 'Approved by HR' || formData.Status == 'Edited by HR' && isMemberOfHR
+    formData.Status === 'Approved by HR' || formData.Status === 'Edited by HR' && isMemberOfHR
 
   const enableDecimoTerceiro = 
     formData.Status === 'Draft' || 
     formData.Status === 'Rejected by HR' || 
     formData.Status === 'Rejected by manager' && isAuthor ||
-    formData.Status === 'Approved by HR' || formData.Status == 'Edited by HR' && isMemberOfHR
+    formData.Status === 'Approved by HR' || formData.Status === 'Edited by HR' && isMemberOfHR
 
   const containerStackTokens: IStackTokens = { 
     childrenGap: 5,
@@ -130,10 +112,10 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     }
   }
 
-  const validateDataInicio = React.useCallback(() => {
+  const validateDataInicio = React.useCallback((periodos: typeof periods) => {
     let errors = []
 
-    errors = formData.periods.reduce((accumulator, period) => {
+    errors = periodos.reduce((accumulator, period) => {
       if ((period.DataInicio.getDay() === DayOfWeek.Friday) || 
         (period.DataInicio.getDay() === DayOfWeek.Saturday)  || 
         (period.DataInicio.getDay() === DayOfWeek.Sunday) ){          
@@ -144,7 +126,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     }, [])
 
     return errors
-  }, [formData])
+  }, [periodos])
 
   const validateObservacao = React.useCallback(() => {
     let errors = []
@@ -176,8 +158,27 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     return errors
   }, [formData.ObservacaoRH])
 
+  const validateQuantidadeDias = React.useCallback(() => {
+    let errors = []
+    const maximoQuantidadeDias = 30 - formData.AbonoQuantidadeDias
+
+    const quantidadeDias = periodos.reduce((accumulator, period) => {
+      return accumulator + period.QuantidadeDias
+    }, 0)
+
+    if (quantidadeDias !== maximoQuantidadeDias) {
+      errors.push(`A soma dos períodos deve ser igual a ${maximoQuantidadeDias} dias.`)
+    }
+
+    return errors
+  }, [periodos])
+
+  const onSave = React.useCallback((item: IListSolicitacaoFeriasItem ) => {
+    _onSave(item, periodos)
+  } , [item, periodos])
+
   const _onSend= (): void => {
-    const errorList = [...validateDataInicio(), ...validateObservacao()]
+    const errorList = [...validateQuantidadeDias(), ...validateDataInicio(periodos), ...validateObservacao()]
     const isFormValid = errorList.length > 0 ? false : true
 
     if(!isFormValid) {
@@ -252,7 +253,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
   }
 
   const onSaveHR= (): void => {
-    const errorList = validateDataInicio()
+    const errorList = [...validateQuantidadeDias(), ...validateDataInicio(periodos)]
     const isFormValid = errorList.length > 0 ? false : true
 
     if(!isFormValid) {
@@ -287,7 +288,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     value: value
   }) 
 
-  const onChangeQtdDias = (selectedOptionText: QuantidadeDiasOptionText) => {
+  const onChangeModalidade = (selectedOptionText: QuantidadeDiasOptionText) => {
     const selectedQuantidadeDias = QuantidadeDiasOptions.find((option) => {
       return option.text === selectedOptionText
     })
@@ -305,52 +306,77 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
   }
 
   const onChangeDataInicio = (index: number, value: Date): void => {
-    const currentOption = QuantidadeDiasOptions.find((option) => {
-      return option.text === formData.QtdDias
-    })
-
-    const newPeriods = [...formData.periods]
-    newPeriods[index].DataInicio = value
-    newPeriods[index].DataFim = new Date(value.getTime())
-    newPeriods[index].DataFim.setDate(newPeriods[index].DataFim.getDate() + currentOption.periods[index].totalDias)
-
-    const periodsToUpdate = newPeriods.slice(index + 1)
-    const totalPeriodsToUpdate = periodsToUpdate.length
+    const newPeriods = [...periodos]
+    const periodsToUpdate = newPeriods.slice(index)
     
-    const updatedPeriods = periodsToUpdate.reduce((accumulator, _, index) => {
+    const updatedPeriods = periodsToUpdate.reduce((accumulator, currentValue, index) => {
       const {
-        totalDias
-      } = currentOption.periods[index + newPeriods.length - totalPeriodsToUpdate]
+        QuantidadeDias,
+        DecimoTerceiro
+      } = currentValue
 
       const DataInicio = index === 0 ? 
-        newPeriods[newPeriods.length - totalPeriodsToUpdate - 1].DataFim :
+        value :
         accumulator[index - 1].DataFim
 
       const DataFim = new Date(DataInicio.getTime())
-      DataFim.setDate(DataFim.getDate() + totalDias)
+      DataFim.setDate(DataFim.getDate() + QuantidadeDias)
+
+      const isDecimoTerceiroBetweenPeriod = DataInicio.getMonth() >= 1 && DataInicio.getMonth() <= 9
 
       const newPeriod = {
+        ...currentValue,
         DataInicio,
-        DataFim
+        DataFim,
+        DecimoTerceiro: isDecimoTerceiroBetweenPeriod ? DecimoTerceiro : false
       }
 
       return [...accumulator, newPeriod]
     }, [])
 
-    const updatedPeriodsToSet = [...newPeriods.slice(0, index + 1), ...updatedPeriods]
+    const updatedPeriodsToSet = [...newPeriods.slice(0, index), ...updatedPeriods]
 
     setPeriodos(updatedPeriodsToSet)
   }
 
   const onChangeDecimoTerceiro = (index: number, value: boolean): void => {
-    const newPeriods = [...formData.periods]
+    const newPeriods = [...periodos]
     newPeriods.forEach((period) => { period.DecimoTerceiro = false })
     newPeriods[index].DecimoTerceiro = value
 
-    _onChange({
-      formField: 'periods',
-      value: newPeriods
-    })
+    setPeriodos(newPeriods)
+  }
+
+  const onChangeQuantidadeDias = (index: number, option: IDropdownOption): void => {
+    const newPeriods = [...periodos]
+    newPeriods[index].QuantidadeDias = parseInt(option.text)
+
+    const periodsToUpdate = newPeriods.slice(index)
+
+    const updatedPeriods = periodsToUpdate.reduce((accumulator, currentValue, index) => {
+      const {
+        QuantidadeDias
+      } = currentValue
+
+      const DataInicio = index === 0 ? currentValue.DataInicio : accumulator[index - 1].DataFim
+      const DataFim = new Date(DataInicio.getTime())
+      DataFim.setDate(DataFim.getDate() + QuantidadeDias)
+
+      const isDecimoTerceiroBetweenPeriod = DataInicio.getMonth() >= 1 && DataInicio.getMonth() <= 9
+
+      const newPeriod = {
+        ...currentValue,
+        DataInicio,
+        DataFim,
+        DecimoTerceiro: isDecimoTerceiroBetweenPeriod ? currentValue.DecimoTerceiro : false
+      }
+
+      return [...accumulator, newPeriod]
+    }, [])
+
+    const updatedPeriodsToSet = [...newPeriods.slice(0, index), ...updatedPeriods]
+
+    setPeriodos(updatedPeriodsToSet)
   }
 
   let formElement: JSX.Element
@@ -363,7 +389,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
       selectedKey={QuantidadeDiasOptions.findIndex((option) => option.text === formData.QtdDias)}
       status={formData.Status}
       onChangeHandler={_onChange}
-      onChangeQuantidadeDias={onChangeQtdDias}/>
+      onChangeQuantidadeDias={onChangeModalidade}/>
   }
 
   else {
@@ -378,7 +404,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
         isUserManager={isUserManager}
         isMemberOfHR={isMemberOfHR}
         selectedKey={QuantidadeDiasOptions.findIndex((option) => option.text === formData.QtdDias)}
-        onChangeQuantidadeDias={onChangeQtdDias}/>
+        onChangeQuantidadeDias={onChangeModalidade}/>
   }
 
   return (
@@ -400,8 +426,10 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
             disableDataInicio={!enableDataInicio} 
             disableDecimoTerceiro={!enableDecimoTerceiro}
             minDate={minDate}
+            options={periodosOptions}
             onChangeDataInicio={onChangeDataInicio}
-            onChangeDecimoTerceiro={onChangeDecimoTerceiro}/>
+            onChangeDecimoTerceiro={onChangeDecimoTerceiro}
+            onChangeQuantidadeDias={onChangeQuantidadeDias}/>
         </Stack>
 
         <Stack 
