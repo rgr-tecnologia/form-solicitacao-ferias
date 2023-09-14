@@ -14,7 +14,11 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
     } = props
 
     const tokens: IStackTokens = {
-        childrenGap: 16,
+        childrenGap: 12,
+    }
+
+    const style: React.CSSProperties ={
+        width: "20%",
     }
 
     const _onChangeDataInicio = (index: number, value?: Date): void => {
@@ -32,19 +36,19 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
                 horizontalAlign="space-around" 
                 verticalAlign="center">
 
-                <Stack>
+                <Stack style={style}>
                     <Label>Período</Label>
                 </Stack>
-                <Stack>
-                    <Label>Quantidade de dias</Label>
+                <Stack style={style}>
+                    <Label>Qtd de dias</Label>
                 </Stack>
-                <Stack>
+                <Stack style={style}>
                     <Label>Data Início</Label>
                 </Stack>
-                <Stack>
+                <Stack style={style}>
                     <Label>Data Fim</Label>
                 </Stack>
-                <Stack>
+                <Stack style={style}>
                     <Label>13° salário?</Label>
                 </Stack>
             </Stack>
@@ -67,32 +71,38 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
                                 horizontalAlign="space-around"
                                 tokens={tokens}>
 
-                                <Stack verticalAlign="center">
+                                <Stack verticalAlign="center" style={style}>
                                     <Text>
                                         {index + 1}° período
                                     </Text>
                                 </Stack>
 
-                                <Dropdown 
-                                    options={options}
-                                    selectedKey={selectedKey}
-                                    onChange={(ev, option) => onChangeQuantidadeDias(index, option)}
-                                    disabled={disableFields}
-                                />
+                                <Stack style={style}>
+                                    <Dropdown 
+                                        options={options}
+                                        selectedKey={selectedKey}
+                                        onChange={(ev, option) => onChangeQuantidadeDias(index, option)}
+                                        disabled={disableFields}
+                                    />
+                                </Stack>
 
-                                <DatePicker 
-                                    value={DataInicio} 
-                                    minDate={index === 0 ? minDate : periods[index-1].DataFim}
-                                    onSelectDate={(value: Date)=> _onChangeDataInicio(index, value)}
-                                    formatDate={(date: Date) => date.toLocaleDateString()}
-                                    disabled={disableFields} />
+                                <Stack style={style}>
+                                    <DatePicker 
+                                        value={DataInicio} 
+                                        minDate={index === 0 ? minDate : periods[index-1].DataFim}
+                                        onSelectDate={(value: Date)=> _onChangeDataInicio(index, value)}
+                                        formatDate={(date: Date) => date.toLocaleDateString()}
+                                        disabled={disableFields} />
+                                </Stack>
 
-                                <DatePicker 
-                                    value={DataFim}
-                                    formatDate={(date: Date) => date.toLocaleDateString()}
-                                    disabled />
+                                <Stack style={style}>
+                                    <DatePicker 
+                                        value={DataFim}
+                                        formatDate={(date: Date) => date.toLocaleDateString()}
+                                        disabled />
+                                </Stack>
 
-                                <Stack verticalAlign="center">
+                                <Stack style={style} verticalAlign="center">
                                     <Checkbox label="13° salário" 
                                         checked={period.DecimoTerceiro}
                                         disabled={disableFields || !enableDecimoTerceiro}
