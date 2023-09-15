@@ -108,17 +108,11 @@ export default class HelloWorldFormCustomizer
   }
 
   private _getItemData(): Promise<IListItemResponse> {
-    const { guid } = this.context.list;
+    const apiUrl = this.context.pageContext.web.absoluteUrl + `/_api/web/lists(guid'${this.context.list.guid}')/items(${this.context.itemId})`
     
     // load item to display on the form
     return this.context.spHttpClient
-      .get(
-        this.context.pageContext.web.absoluteUrl + `/_api/web/lists(guid'${guid}')/items(${this.context.itemId})`,
-        SPHttpClient.configurations.v1, {
-        headers: {
-          accept: 'application/json;odata.metadata=none'
-        }
-      })
+      .get(apiUrl, SPHttpClient.configurations.v1)
       .then(res => {
         if (res.ok) {
           return res.json();

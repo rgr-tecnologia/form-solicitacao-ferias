@@ -8,11 +8,8 @@
       "formCustomizer": {
         "componentId": "555a2079-82c5-4be8-963d-5a3a6019d12e",
         "PageType": 4,
-        "RootFolder": "/sites/newportal/Lists/SolicitaFerias",
-        "properties": {
-          "sampleText": "Value"
-        },
-        "ID": 153
+        "RootFolder": "/sites/newportal/Lists/SolicitacaoFerias",
+        "ID": 5
       }
     },
     "helloWorld_NewForm": {
@@ -20,10 +17,7 @@
       "formCustomizer": {
         "componentId": "555a2079-82c5-4be8-963d-5a3a6019d12e",
         "PageType": 8,
-        "RootFolder": "/sites/newportal/Lists/SolicitaFerias",
-        "properties": {
-          "sampleText": "Value"
-        }
+        "RootFolder": "/sites/newportal/Lists/SolicitacaoFerias"
       }
     },
     "helloWorld_EditForm": {
@@ -31,11 +25,8 @@
       "formCustomizer": {
         "componentId": "555a2079-82c5-4be8-963d-5a3a6019d12e",
         "PageType": 6,
-        "RootFolder": "/sites/newportal/Lists/SolicitaFerias",
-        "ID": 7,
-        "properties": {
-          "sampleText": "Value"
-        }
+        "RootFolder": "/sites/newportal/Lists/SolicitacaoFerias",
+        "ID": 7
       }
     },
     "helloWorld_ViewForm": {
@@ -43,11 +34,8 @@
       "formCustomizer": {
         "componentId": "555a2079-82c5-4be8-963d-5a3a6019d12e",
         "PageType": 4,
-        "RootFolder": "/sites/newportal/Lists/SolicitaFerias",
-        "ID": 7,
-        "properties": {
-          "sampleText": "Value"
-        }
+        "RootFolder": "/sites/newportal/Lists/SolicitacaoFerias",
+        "ID": 7
       }
     }
   }
