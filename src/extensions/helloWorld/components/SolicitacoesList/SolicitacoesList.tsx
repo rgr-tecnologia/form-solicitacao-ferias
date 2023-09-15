@@ -20,9 +20,10 @@ export default function SolicitacoesList(props: ISolititacoesListProps): React.R
             minWidth: 100,
             maxWidth: 200,
             onRender: (item: IListSolicitacaoFeriasItem) => {
+                const listId = '3f6aca03-ed95-49d7-91a4-aae35eaa1958'
                 return (
                     <Link
-                        href={`/sites/newportal/_layouts/15/SPListForm.aspx?PageType=4&List=01c2737e-aec9-47d1-ad24-3569b2bc534b&ID=${item.Id}`}
+                        href={`/sites/newportal/_layouts/15/SPListForm.aspx?PageType=4&List=${listId}&ID=${item.Id}`}
                         target='_blank'>
                         {new Date(item.Created).getFullYear()}
                     </Link>
