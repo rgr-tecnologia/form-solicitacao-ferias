@@ -51,6 +51,18 @@ export default class HelloWorldFormCustomizer
 
   private _userItems: IFormSolicitacaoFeriasProps["item"][];
 
+  private async ensureUserByLoginName(loginName: string) {
+    const response = await this.context.spHttpClient.post(`${this.context.pageContext.site.absoluteUrl}/_api/web/ensureuser`,
+      SPHttpClient.configurations.v1,
+      {
+        body: JSON.stringify({
+          'logonName': loginName
+        })
+      })
+
+    return await response.json()
+  }
+
   private async _getManagerProfile(): Promise<{Id: number}> {    
     const {
       loginName 
@@ -58,7 +70,7 @@ export default class HelloWorldFormCustomizer
     
     const response = await this.context.spHttpClient
       .get(
-        this.context.pageContext.web.absoluteUrl + `/_api/web/lists/getbytitle('${this._allUsersList.title}')/items?$filter=LoginName eq '${loginName}'&$top=1`,
+        this.context.pageContext.web.absoluteUrl + `/_api/web/lists/getbytitle('${this._allUsersList.title}')/items?$filter=EMAIL_EMPLOYE eq '${loginName}'&$top=1`,
         SPHttpClient.configurations.v1, {
         headers: {
           accept: 'application/json;odata.metadata=none'
@@ -69,14 +81,7 @@ export default class HelloWorldFormCustomizer
 
     const { EMAIL_1ST_EVALUATOR: managerEmail } = (await responseJSON).value.shift()
 
-    const managerProfileResponse = await this.context.spHttpClient
-      .get(
-        this.context.pageContext.web.absoluteUrl + `/_api/Web/SiteUsers?$filter=UserPrincipalName eq '${managerEmail}'`,
-        SPHttpClient.configurations.v1, {
-        headers: {
-          accept: 'application/json;odata.metadata=none'
-        }
-      })
+    const managerProfileResponse = await this.ensureUserByLoginName(managerEmail)
 
     const responseManagerProfile = managerProfileResponse.ok ? managerProfileResponse.json() : Promise.reject(managerProfileResponse.statusText)
 
@@ -133,7 +138,7 @@ export default class HelloWorldFormCustomizer
       return value
     }
 
-    return value.map((item: any) => {
+    return value.map((item: any): PeriodItem[] => {
       return {
         ...item,
         DataInicio: new Date(item.DataInicio),
@@ -142,7 +147,7 @@ export default class HelloWorldFormCustomizer
     })
   }
 
-  private async createOnSecondaryList(data: PeriodItem): Promise<any> {
+  private async createOnSecondaryList(data: PeriodItem): Promise<PeriodItem> {
     const apiUrl = this.context.pageContext.web.absoluteUrl + `/_api/web/lists(guid'${this.secondaryListId}')/items`
   
     const response = await this.context.spHttpClient.post(apiUrl, SPHttpClient.configurations.v1, {
@@ -160,7 +165,11 @@ export default class HelloWorldFormCustomizer
     }
   }
 
-  private async _createItem(item: IFormSolicitacaoFeriasProps['item'], periods: IFormSolicitacaoFeriasProps['periods']) {
+  private async _createItem(
+    item: IFormSolicitacaoFeriasProps['item'], 
+    periods: IFormSolicitacaoFeriasProps['periods']
+  ): Promise<IFormSolicitacaoFeriasProps['item']> {
+    
     const { guid } = this.context.list;
     const {
       Created,

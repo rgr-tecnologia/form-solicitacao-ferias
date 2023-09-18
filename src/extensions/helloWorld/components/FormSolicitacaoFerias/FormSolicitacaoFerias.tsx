@@ -123,7 +123,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
   }, [periodos])
 
   const validateObservacao = React.useCallback(() => {
-    let errors = []
+    const errors = []
 
     if (!formData.Observacao) {
       errors.push('O campo "Observações" é obrigatório.')
@@ -133,7 +133,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
   }, [formData.Observacao])
 
   const validateObservacaoGestor = React.useCallback(() => {
-    let errors = []
+    const errors = []
 
     if (!formData.ObservacaoGestor) {
       errors.push('O campo "Observações gestor" é obrigatório.')
@@ -143,7 +143,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
   }, [formData.ObservacaoGestor])
 
   const validateObservacaoRH = React.useCallback(() => {
-    let errors = []
+    const errors = []
 
     if (!formData.ObservacaoRH) {
       errors.push('O campo "Observações RH" é obrigatório.')
@@ -153,7 +153,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
   }, [formData.ObservacaoRH])
 
   const validateQuantidadeDias = React.useCallback(() => {
-    let errors = []
+    const errors = []
     const maximoQuantidadeDias = 30 - formData.AbonoQuantidadeDias
 
     const quantidadeDias = periodos.reduce((accumulator, period) => {
