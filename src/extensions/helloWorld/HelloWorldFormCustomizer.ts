@@ -83,9 +83,7 @@ export default class HelloWorldFormCustomizer
 
     const managerProfileResponse = await this.ensureUserByLoginName(managerEmail)
 
-    const responseManagerProfile = managerProfileResponse.ok ? managerProfileResponse.json() : Promise.reject(managerProfileResponse.statusText)
-
-    return (await responseManagerProfile).value.shift()
+    return managerProfileResponse
   }
 
   private _getUserItems(userId: number): Promise<{
