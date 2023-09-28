@@ -11,5 +11,5 @@ export interface IFormSolicitacaoFeriasProps {
     isUserManager: boolean;
     isMemberOfHR: boolean;
     isAuthor: boolean;
-    periods: PeriodItem[]
+    periods: PeriodItem[];
   }

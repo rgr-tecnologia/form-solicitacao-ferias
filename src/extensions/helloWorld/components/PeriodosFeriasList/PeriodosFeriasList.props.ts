@@ -5,6 +5,7 @@ export interface PeriodosFeriasListProps {
     disableFields: boolean;
     minDate: Date;
     options: IDropdownOption[];
+    disabledDates: Date[];
     onChangeDataInicio?: (index: number, newDate: Date) => void;
     onChangeDecimoTerceiro?: (index: number, value: boolean) => void;
     onChangeQuantidadeDias?: (index: number, value: IDropdownOption) => void;

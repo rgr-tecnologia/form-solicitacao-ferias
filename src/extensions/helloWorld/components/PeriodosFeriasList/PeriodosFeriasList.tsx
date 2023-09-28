@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Checkbox, DatePicker, Dropdown, IStackTokens, Label, Stack, Text } from "office-ui-fabric-react";
+import { Checkbox, DatePicker, Dropdown, IStackTokens, Label, Stack, Text, ICalendarProps } from "office-ui-fabric-react";
 import { PeriodosFeriasListProps } from "./PeriodosFeriasList.props";
 
 export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element {
@@ -10,7 +10,8 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
         onChangeQuantidadeDias,
         disableFields,
         minDate,
-        options
+        options,
+        disabledDates
     } = props
 
     const tokens: IStackTokens = {
@@ -27,6 +28,11 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
 
     const _onChangeDecimoTerceiro = (index: number, value: boolean): void => {
         onChangeDecimoTerceiro(index, value)
+    }
+
+    const calendar: ICalendarProps = {
+        strings: null,
+        restrictedDates: disabledDates,
     }
 
     return (
@@ -92,7 +98,9 @@ export function PeriodosFeriasList(props: PeriodosFeriasListProps): JSX.Element 
                                         minDate={index === 0 ? minDate : periods[index-1].DataFim}
                                         onSelectDate={(value: Date)=> _onChangeDataInicio(index, value)}
                                         formatDate={(date: Date) => date.toLocaleDateString()}
-                                        disabled={disableFields} />
+                                        disabled={disableFields} 
+                                        calendarProps={calendar} 
+                                        />
                                 </Stack>
 
                                 <Stack style={style}>

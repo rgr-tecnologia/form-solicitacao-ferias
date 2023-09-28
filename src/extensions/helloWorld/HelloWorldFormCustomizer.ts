@@ -330,7 +330,6 @@ export default class HelloWorldFormCustomizer
 
   public render(): void {
     // Use this method to perform your custom rendering.
-
     const helloWorld: React.ReactElement<{}> =
       React.createElement(FormSolicitacaoFerias, {
         context: this.context,

@@ -17,6 +17,7 @@ import { useQuantidadeDiasOptions } from '../../../../hooks/useQuantidadeDiasOpt
 import { PeriodosFeriasList } from '../PeriodosFeriasList/PeriodosFeriasList';
 import { QuantidadeDiasOption, QuantidadeDiasOptionText } from '../../../../enums/QuantidadeDiasOption';
 import { PeriodItem } from '../PeriodosFeriasList/PeriodosFeriasList.props';
+import { useFeriados } from '../../../../hooks/useFeriados';
 
 export interface IFormOnChangeHandlerProps {
   formField: keyof IListSolicitacaoFeriasItem;
@@ -34,7 +35,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     isAuthor,
     userItems,
     item,
-    periods
+    periods,
   } = props
 
   const {
@@ -43,6 +44,27 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
   
   const [formData, setFormData] = React.useState<IListSolicitacaoFeriasItem>(item)
   const [errorList, setErrorlist] = React.useState<string[]>([])
+  const [disabledDates, setDisabledDates] = React.useState<Date[]>([])
+
+  React.useEffect(() => {
+    const feriados = useFeriados()
+
+    feriados.then((feriados) => {
+      return feriados.map((feriado) => {
+        const date = feriado.DiaFeriado
+        const month = feriado.MesFeriado - 1
+
+        return Array(3).fill({}).map((_, index) => {
+          const year = new Date().getFullYear() + index
+
+          return new Date(year, month, date)
+        })
+      }).flat()
+    })
+    .then((feriados) => {
+      setDisabledDates(feriados)
+    })
+  }, [])
 
   const QuantidadeDiasOptions = useQuantidadeDiasOptions()
 
@@ -84,6 +106,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
       }
     })
   }, [formData.QtdDias])
+  
 
   const disableFields = 
     formData.Status === 'Draft' || 
@@ -422,7 +445,8 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
             options={periodosOptions}
             onChangeDataInicio={onChangeDataInicio}
             onChangeDecimoTerceiro={onChangeDecimoTerceiro}
-            onChangeQuantidadeDias={onChangeQuantidadeDias}/>
+            onChangeQuantidadeDias={onChangeQuantidadeDias}
+            disabledDates={disabledDates}/>
         </Stack>
 
         <Stack 
