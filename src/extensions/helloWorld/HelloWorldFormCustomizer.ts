@@ -51,7 +51,7 @@ export default class HelloWorldFormCustomizer
 
   private _userItems: IFormSolicitacaoFeriasProps["item"][];
 
-  private async ensureUserByLoginName(loginName: string) {
+  private async ensureUserByLoginName(loginName: string): Promise<any> {
     const response = await this.context.spHttpClient.post(`${this.context.pageContext.site.absoluteUrl}/_api/web/ensureuser`,
       SPHttpClient.configurations.v1,
       {
@@ -127,10 +127,10 @@ export default class HelloWorldFormCustomizer
   }
 
   private async getItemsFromSecondaryList(id: number): Promise<PeriodItem[]> { 
-    const apiUrl =  this.context.pageContext.web.absoluteUrl + `/_api/web/lists(guid'${this.secondaryListId}')/items?$filter=SolicitacaoFeriasId eq ${id}`
+    const apiUrl = this.context.pageContext.web.absoluteUrl + `/_api/web/lists(guid'${this.secondaryListId}')/items?$filter=SolicitacaoFeriasId eq ${id}`
 
     const getDataResponse = await this.context.spHttpClient.get(apiUrl, SPHttpClient.configurations.v1)
-    const { value }  = await getDataResponse.json()
+    const { value } = await getDataResponse.json()
 
     if(value.length === 0) {
       return value
@@ -150,7 +150,7 @@ export default class HelloWorldFormCustomizer
   
     const response = await this.context.spHttpClient.post(apiUrl, SPHttpClient.configurations.v1, {
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': "application/json;odata=nometadata" 
       },
       body: JSON.stringify(data),
     });
@@ -170,7 +170,6 @@ export default class HelloWorldFormCustomizer
     
     const { guid } = this.context.list;
     const {
-      Created,
       ...itemToSave
     } = item
 
@@ -198,7 +197,6 @@ export default class HelloWorldFormCustomizer
   private async _updateItem(item: IFormSolicitacaoFeriasProps['item'], periods: IFormSolicitacaoFeriasProps['periods']): Promise<any> {
     const { guid } = this.context.list;
     const {
-      Created,
       ...itemToSave
     } = item
 
@@ -206,10 +204,10 @@ export default class HelloWorldFormCustomizer
 
     await this.context.spHttpClient.post(apiUrl, SPHttpClient.configurations.v1, {
       headers: {
-        'content-type': 'application/json;odata.metadata=none',
-        'if-match': '*',
-        'x-http-method': 'MERGE'
-
+        'Content-Type': 'application/json;odata.metadata=none',
+        "IF-MATCH": '*',
+        "X-HTTP-Method": 'MERGE',
+        "accept": "application/json;odata=verbose",
       },
       body: JSON.stringify(itemToSave)
     });
@@ -271,7 +269,7 @@ export default class HelloWorldFormCustomizer
             AuthorId: null,
             ObservacaoGestor: null,
             ObservacaoRH: null,
-            Created: new Date().toISOString(),
+            PeriodoAquisitivo: null,
           }        
 
           const userItems = await this._getUserItems(this.context.pageContext.legacyPageContext.userId)
@@ -328,6 +326,29 @@ export default class HelloWorldFormCustomizer
     return !!group
   }
 
+  private updateItem(guid: string, id: number, data: any): Promise<void> {
+    const apiUrl = `${this.context.pageContext.web.absoluteUrl}/_api/web/lists(guid'${guid}')/items(${id})`
+
+    return this.context.spHttpClient.post(apiUrl, SPHttpClient.configurations.v1, {
+      headers: {
+        'Content-Type': 'application/json;odata.metadata=none',
+        "IF-MATCH": '*',
+        "X-HTTP-Method": 'MERGE',
+        'Odata-Version' : '4.0'
+      },
+      body: JSON.stringify(data)
+    })
+    .then(res => {
+      if (res.ok) {
+        res.json();
+        return Promise.resolve();
+      }
+      else {
+        return Promise.reject(res.statusText);
+      }
+    })
+  }
+
   public render(): void {
     // Use this method to perform your custom rendering.
     const helloWorld: React.ReactElement<{}> =
@@ -342,6 +363,8 @@ export default class HelloWorldFormCustomizer
         isAuthor: this._item.AuthorId === this.context.pageContext.legacyPageContext.userId,
         userItems: this._userItems,
         periods: this._periods,
+        userDisplayName: this.context.pageContext.user.displayName,
+        updateItem: this.updateItem.bind(this),
        } as IFormSolicitacaoFeriasProps);
 
     ReactDOM.render(helloWorld, this.domElement);

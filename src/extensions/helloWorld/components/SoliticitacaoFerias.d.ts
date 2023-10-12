@@ -4,11 +4,12 @@ export default interface IListSolicitacaoFeriasItem {
     Id?: number;
     AbonoQuantidadeDias: number;
     AuthorId: number;
-    Created: string;
+    Created?: string;
     GestorId: number;
     Observacao: string;
     ObservacaoGestor: string;
     ObservacaoRH: string;
     QtdDias: QuantidadeDiasOptionText;
     Status: StatusSolicitacaoFerias;
+    PeriodoAquisitivo: Date;
 }

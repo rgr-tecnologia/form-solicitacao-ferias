@@ -18,6 +18,9 @@ import { PeriodosFeriasList } from '../PeriodosFeriasList/PeriodosFeriasList';
 import { QuantidadeDiasOption, QuantidadeDiasOptionText } from '../../../../enums/QuantidadeDiasOption';
 import { PeriodItem } from '../PeriodosFeriasList/PeriodosFeriasList.props';
 import { useFeriados } from '../../../../hooks/useFeriados';
+import { useControleFerias } from '../../../../hooks/useControleFerias';
+import { FormDisplayMode } from '@microsoft/sp-core-library';
+import { Disclaimer } from '../disclaimer/Disclaimer';
 
 export interface IFormOnChangeHandlerProps {
   formField: keyof IListSolicitacaoFeriasItem;
@@ -36,6 +39,8 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     userItems,
     item,
     periods,
+    userDisplayName,
+    updateItem
   } = props
 
   const {
@@ -46,29 +51,36 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
   const [errorList, setErrorlist] = React.useState<string[]>([])
   const [disabledDates, setDisabledDates] = React.useState<Date[]>([])
 
+  const [, items, isLoadingPeriodo] = useControleFerias({
+    filter: {
+      'NomeColaborador/NAME_EMPLOYEE': {
+        eq: `'${userDisplayName}'`
+      }
+    }
+  })
+
+  const [, feriados, isLoadingFeriado] = useFeriados({})
+
+  const currentPeriodoAquisitivo = items[0]
+
   React.useEffect(() => {
-    const feriados = useFeriados()
+    const datesToDisable = feriados.map((feriado) => {
+      const date = feriado.DiaFeriado
+      const month = feriado.MesFeriado - 1
 
-    feriados.then((feriados) => {
-      return feriados.map((feriado) => {
-        const date = feriado.DiaFeriado
-        const month = feriado.MesFeriado - 1
+      return Array(3).fill({}).map((_, index) => {
+        const year = new Date().getFullYear() + index
 
-        return Array(3).fill({}).map((_, index) => {
-          const year = new Date().getFullYear() + index
+        return new Date(year, month, date)
+      })
+    }).flat()
 
-          return new Date(year, month, date)
-        })
-      }).flat()
-    })
-    .then((feriados) => {
-      setDisabledDates(feriados)
-    })
-  }, [])
+    setDisabledDates(datesToDisable)
+  }, [feriados])
 
   const QuantidadeDiasOptions = useQuantidadeDiasOptions()
 
-  const minDate = React.useMemo(() => {    
+  const minDate = React.useMemo(() => {
     const minDate = 
       formData.Status === 'Approved by HR' || 
       formData.Status === 'Edited by HR' && isMemberOfHR ? 
@@ -105,8 +117,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
         text: option.totalDias.toString()
       }
     })
-  }, [formData.QtdDias])
-  
+  }, [formData.QtdDias])  
 
   const disableFields = 
     formData.Status === 'Draft' || 
@@ -191,7 +202,9 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
   }, [periodos])
 
   const onSave = React.useCallback((item: IListSolicitacaoFeriasItem ) => {
-    _onSave(item, periodos)
+    _onSave({
+      ...item,
+    }, periodos)
   } , [item, periodos])
 
   const _onSend= (): void => {
@@ -239,7 +252,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     })
   }
 
-  const onApproveHR= (): void => {
+  const onApproveHR= async (): Promise<void> => {
     const errorList = [...validateObservacaoRH()]
     const isFormValid = errorList.length > 0 ? false : true
 
@@ -247,6 +260,18 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
       setErrorlist(errorList)
       throw Error(errorList[0]);
     }
+    
+    const {
+      NomeColaborador,
+      ...periodoToUpdate
+    } = currentPeriodoAquisitivo    
+    
+    await updateItem(
+      '95a4f6c1-9837-4f6e-bcb5-488115e6a417',
+      periodoToUpdate.Id, {
+        ...periodoToUpdate,
+        InicioPeriodoAtual: periodoToUpdate.FimPeriodoAtual      
+    })
   
     onSave({
       ...formData,
@@ -305,7 +330,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
     value: value
   }) 
 
-  const onChangeModalidade = (selectedOptionText: QuantidadeDiasOptionText) => {
+  const onChangeModalidade = (selectedOptionText: QuantidadeDiasOptionText) : void => {
     const selectedQuantidadeDias = QuantidadeDiasOptions.find((option) => {
       return option.text === selectedOptionText
     })
@@ -332,9 +357,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
         DecimoTerceiro
       } = currentValue
 
-      const DataInicio = index === 0 ? 
-        value :
-        accumulator[index - 1].DataFim
+      const DataInicio = index === 0 ? value : accumulator[index - 1].DataFim
 
       const DataFim = new Date(DataInicio.getTime())
       DataFim.setDate(DataFim.getDate() + QuantidadeDias)
@@ -399,7 +422,7 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
   let formElement: JSX.Element
   
   if(Status === 'Draft' || Status === 'Rejected by manager' || Status === 'Rejected by HR') {
-    formElement = <CreateForm 
+    formElement= <CreateForm 
       observacoes={formData.Observacao}
       observacoesGestor={formData.ObservacaoGestor}
       observacoesRH={formData.ObservacaoRH}
@@ -422,6 +445,33 @@ export default function FormSolicitacaoFerias(props: IFormSolicitacaoFeriasProps
         isMemberOfHR={isMemberOfHR}
         selectedKey={QuantidadeDiasOptions.findIndex((option) => option.text === formData.QtdDias)}
         onChangeQuantidadeDias={onChangeModalidade}/>
+  }
+
+  const lastItemByAnoPeriodoQuesitivo = React.useMemo(() => {
+    const lastItem = userItems.sort((a, b) => {
+      return new Date(b.PeriodoAquisitivo).getFullYear() - new Date(a.PeriodoAquisitivo).getFullYear()
+    })[0]
+
+    return lastItem
+  }, [userItems])
+
+  if(isLoadingPeriodo || isLoadingFeriado) return <div>Carregando...</div>
+
+  if(displayMode === FormDisplayMode.New) {
+    if(!currentPeriodoAquisitivo) {
+      return <Disclaimer message='Você não possui período aquisitivo cadastrado.'/>
+    }
+    else if(currentPeriodoAquisitivo.SaldoDias <= 0) {
+      return <Disclaimer message='Você não possui saldo de dias para solicitar férias.'/>
+    }
+    else if(lastItemByAnoPeriodoQuesitivo){
+      const lastPeriodoAquisitivo = new Date(lastItemByAnoPeriodoQuesitivo.PeriodoAquisitivo)
+      if(lastPeriodoAquisitivo.getFullYear() === new Date(currentPeriodoAquisitivo.InicioPeriodoAtual).getFullYear()) {
+        return <Disclaimer message='Você já possui uma solicitação de férias para o período aquisitivo atual.'/>
+      }
+    }
+
+    item.PeriodoAquisitivo = currentPeriodoAquisitivo.InicioPeriodoAtual
   }
 
   return (

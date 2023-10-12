@@ -16,7 +16,7 @@ export default function SolicitacoesList(props: ISolititacoesListProps): React.R
         {
             key: 'column6',
             name: 'Ano de referência',
-            fieldName: 'Created',
+            fieldName: 'PeriodoAquisitivo',
             minWidth: 100,
             maxWidth: 200,
             onRender: (item: IListSolicitacaoFeriasItem) => {
@@ -25,7 +25,7 @@ export default function SolicitacoesList(props: ISolititacoesListProps): React.R
                     <Link
                         href={`/sites/newportal/_layouts/15/SPListForm.aspx?PageType=4&List=${listId}&ID=${item.Id}`}
                         target='_blank'>
-                        {new Date(item.Created).getFullYear()}
+                        {new Date(item.PeriodoAquisitivo).getFullYear()}
                     </Link>
                 )
             }
