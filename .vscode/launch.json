@@ -3,9 +3,9 @@
   "configurations": [
     {
       "name": "Hosted workbench",
-      "type": "pwa-chrome",
+      "type": "chrome",
       "request": "launch",
-      "url": "https://enter-your-SharePoint-site/_layouts/workbench.aspx",
+      "url": "https://cjinter.sharepoint.com/sites/newportal/_layouts/workbench.aspx?debug=true&noredir=true&debugManifestsFile=https://localhost:4321/temp/manifests.js",
       "webRoot": "${workspaceRoot}",
       "sourceMaps": true,
       "sourceMapPathOverrides": {
@@ -14,10 +14,7 @@
         "webpack:///../../../../src/*": "${webRoot}/src/*",
         "webpack:///../../../../../src/*": "${webRoot}/src/*"
       },
-      "runtimeArgs": [
-        "--remote-debugging-port=9222",
-        "-incognito"
-      ]
+      "runtimeArgs": ["--remote-debugging-port=9222", "-incognito"]
     }
   ]
 }
