@@ -108,7 +108,7 @@ export async function updateSolicitacaoFerias(
   id: number,
   data: CreateSolicitacaoFerias,
   context: FormCustomizerContext
-): Promise<SolicitacaoFerias> {
+): Promise<void> {
   const { InternalName } = SolicitacaoFeriasList;
   const apiUrl = `${context.pageContext.web.absoluteUrl}/_api/web/lists/GetByTitle('${InternalName}')/items(${id})`;
   return merge(apiUrl, data, context);

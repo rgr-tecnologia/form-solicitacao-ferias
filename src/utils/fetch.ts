@@ -33,12 +33,12 @@ export async function post<T, K>(
   return (await response.json()) as K;
 }
 
-export async function merge<T, K>(
+export async function merge<T>(
   url: string,
   data: T,
   context: FormCustomizerContext,
   options?: RequestInit
-): Promise<K> {
+): Promise<void> {
   const response = await context.spHttpClient.post(url, config, {
     headers: {
       Accept: "application/json",
@@ -52,7 +52,7 @@ export async function merge<T, K>(
   if (!response.ok) {
     throw new Error(await response.text());
   }
-  return await response.json();
+  return;
 }
 
 export async function patch<T>(
