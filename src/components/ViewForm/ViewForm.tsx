@@ -17,6 +17,7 @@ export default function ViewForm(
   const {
     formData: initialData,
     onChange,
+    onChangeModalidade,
     isUserManager,
     isMemberOfHR,
   } = props;
@@ -50,6 +51,7 @@ export default function ViewForm(
     const selectedOption = QuantidadeDiasOptions[option.key as number];
     setFormData((prevData) => ({ ...prevData, QtdDias: selectedOption.text }));
     onChange({ ...formData, QtdDias: selectedOption.text });
+    onChangeModalidade(selectedOption.text);
   };
 
   const onChangeObservacaoRH = (

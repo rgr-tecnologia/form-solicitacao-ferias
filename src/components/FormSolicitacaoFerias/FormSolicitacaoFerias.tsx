@@ -246,6 +246,7 @@ export default function FormSolicitacaoFerias(
       <ViewForm
         formData={formData}
         onChange={onChangeSolicitacaoFerias}
+        onChangeModalidade={onChangeModalidade}
         isUserManager={isUserManager}
         isMemberOfHR={isMemberOfHR}
       />
