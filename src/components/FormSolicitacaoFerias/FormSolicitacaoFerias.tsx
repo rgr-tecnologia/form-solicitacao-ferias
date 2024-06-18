@@ -126,7 +126,7 @@ export default function FormSolicitacaoFerias(
   );
 
   const onSend = (): void => {
-    const errorList = validateForm(formData, periodos, colaborador);
+    const errorList = validateForm(formData, periodos, periodoAquisitivoAtual);
     const isFormValid = errorList.length > 0 ? false : true;
 
     if (!isFormValid) {
@@ -141,7 +141,7 @@ export default function FormSolicitacaoFerias(
   };
 
   const onApproveManager = (): void => {
-    const errorList = validateForm(formData, periodos, colaborador);
+    const errorList = validateForm(formData, periodos, periodoAquisitivoAtual);
     const isFormValid = errorList.length > 0 ? false : true;
 
     if (!isFormValid) {
@@ -156,7 +156,7 @@ export default function FormSolicitacaoFerias(
   };
 
   const onRejectManager = (): void => {
-    const errorList = validateForm(formData, periodos, colaborador);
+    const errorList = validateForm(formData, periodos, periodoAquisitivoAtual);
     const isFormValid = errorList.length > 0 ? false : true;
 
     if (!isFormValid) {
@@ -171,7 +171,7 @@ export default function FormSolicitacaoFerias(
   };
 
   const onApproveHR = async (): Promise<void> => {
-    const errorList = validateForm(formData, periodos, colaborador);
+    const errorList = validateForm(formData, periodos, periodoAquisitivoAtual);
     const isFormValid = errorList.length > 0 ? false : true;
 
     if (!isFormValid) {
@@ -186,7 +186,7 @@ export default function FormSolicitacaoFerias(
   };
 
   const onRejectHR = (): void => {
-    const errorList = validateForm(formData, periodos, colaborador);
+    const errorList = validateForm(formData, periodos, periodoAquisitivoAtual);
     const isFormValid = errorList.length > 0 ? false : true;
 
     if (!isFormValid) {
@@ -201,7 +201,7 @@ export default function FormSolicitacaoFerias(
   };
 
   const onSaveHR = (): void => {
-    const errorList = validateForm(formData, periodos, colaborador);
+    const errorList = validateForm(formData, periodos, periodoAquisitivoAtual);
     const isFormValid = errorList.length > 0 ? false : true;
 
     if (!isFormValid) {

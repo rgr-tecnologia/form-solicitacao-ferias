@@ -1,7 +1,6 @@
 import { DayOfWeek } from "office-ui-fabric-react";
 import { CreateSolicitacaoFerias } from "../types/SolicitacaoFerias";
 import { Periodo } from "../types/Periodo";
-import { ColaboradorProfile } from "../types/ColaboradorProfile";
 
 export function isDayOfWeek(periodo: Periodo): boolean {
   return (
@@ -12,13 +11,13 @@ export function isDayOfWeek(periodo: Periodo): boolean {
 }
 
 export function isHigherThanMaxDate(periodo: Periodo, maxDate: Date): boolean {
-  return periodo.DataFim > maxDate;
+  return periodo.DataInicio.getTime() > maxDate.getTime();
 }
 
 export function validateForm(
   formData: CreateSolicitacaoFerias,
   periodos: Periodo[],
-  colaborador: ColaboradorProfile
+  periodoAquisitivo: Date
 ): Error[] {
   const errors: Error[] = [];
 
@@ -58,23 +57,15 @@ export function validateForm(
     );
   }
 
-  if (
-    formData.Status === "Approved by HR" ||
-    formData.Status === "Edited by HR"
-  ) {
+  if (formData.Status === "Draft") {
     const maxDate = new Date(
-      new Date(formData.ColaboradorId).setDate(
-        new Date().getDate() + 365 * 2 - 61
-      )
+      new Date(periodoAquisitivo).setDate(new Date().getDate() + 365 * 2 - 61)
     );
-    const hasDataInicioGreaterThanMaxDate = periodos.reduce(
-      (accumulator, currentValue) => {
-        return accumulator && isHigherThanMaxDate(currentValue, maxDate);
-      },
-      true
+    const dataInicioGreaterThanMaxDate = periodos.some((currentValue) =>
+      isHigherThanMaxDate(currentValue, maxDate)
     );
 
-    if (hasDataInicioGreaterThanMaxDate) {
+    if (dataInicioGreaterThanMaxDate) {
       errors.push(
         new Error(
           "A data de início do período não pode ser superior a 2 anos a partir da data atual."
