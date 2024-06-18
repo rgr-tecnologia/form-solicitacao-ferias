@@ -44,6 +44,22 @@ export default function FormSolicitacaoFerias(
 
   const { Status } = item;
 
+  const historicoOrdenadoById = historico.sort((a, b) => {
+    return a.Id - b.Id;
+  });
+
+  const periodoAquisitivoAtual = new Date(colaborador.DataAdmissao);
+
+  if (historicoOrdenadoById.length) {
+    periodoAquisitivoAtual.setFullYear(
+      new Date(
+        historicoOrdenadoById[
+          historicoOrdenadoById.length - 1
+        ].PeriodoAquisitivo
+      ).getFullYear()
+    );
+  }
+
   const [formData, setFormData] =
     React.useState<FormSolicitacaoFeriasProps["item"]>(item);
 
@@ -110,7 +126,7 @@ export default function FormSolicitacaoFerias(
   );
 
   const onSend = (): void => {
-    const errorList = validateForm(formData, periodos);
+    const errorList = validateForm(formData, periodos, colaborador);
     const isFormValid = errorList.length > 0 ? false : true;
 
     if (!isFormValid) {
@@ -125,7 +141,7 @@ export default function FormSolicitacaoFerias(
   };
 
   const onApproveManager = (): void => {
-    const errorList = validateForm(formData, periodos);
+    const errorList = validateForm(formData, periodos, colaborador);
     const isFormValid = errorList.length > 0 ? false : true;
 
     if (!isFormValid) {
@@ -140,7 +156,7 @@ export default function FormSolicitacaoFerias(
   };
 
   const onRejectManager = (): void => {
-    const errorList = validateForm(formData, periodos);
+    const errorList = validateForm(formData, periodos, colaborador);
     const isFormValid = errorList.length > 0 ? false : true;
 
     if (!isFormValid) {
@@ -155,20 +171,13 @@ export default function FormSolicitacaoFerias(
   };
 
   const onApproveHR = async (): Promise<void> => {
-    const errorList = validateForm(formData, periodos);
+    const errorList = validateForm(formData, periodos, colaborador);
     const isFormValid = errorList.length > 0 ? false : true;
 
     if (!isFormValid) {
       setErrors(errorList);
       throw errorList[0];
     }
-
-    // const { NomeColaborador, ...periodoToUpdate } = currentPeriodoAquisitivo;
-
-    // await updateItem(periodoToUpdate.Id, {
-    //   ...periodoToUpdate,
-    //   InicioPeriodoAtual: periodoToUpdate.FimPeriodoAtual,
-    // });
 
     onSave({
       ...formData,
@@ -177,7 +186,7 @@ export default function FormSolicitacaoFerias(
   };
 
   const onRejectHR = (): void => {
-    const errorList = validateForm(formData, periodos);
+    const errorList = validateForm(formData, periodos, colaborador);
     const isFormValid = errorList.length > 0 ? false : true;
 
     if (!isFormValid) {
@@ -192,7 +201,7 @@ export default function FormSolicitacaoFerias(
   };
 
   const onSaveHR = (): void => {
-    const errorList = validateForm(formData, periodos);
+    const errorList = validateForm(formData, periodos, colaborador);
     const isFormValid = errorList.length > 0 ? false : true;
 
     if (!isFormValid) {
@@ -284,20 +293,19 @@ export default function FormSolicitacaoFerias(
       );
     }
 
-    if (historicoOrdenado.length) {
-      if (periodoAquisitivoAtual.getFullYear() === new Date().getFullYear()) {
-        return (
-          <Disclaimer message="Você já possui uma solicitação de férias para o período aquisitivo atual." />
-        );
-      }
+    if (
+      historicoOrdenado.length &&
+      periodoAquisitivoAtual.getFullYear() === new Date().getFullYear()
+    ) {
+      return (
+        <Disclaimer message="Você já possui uma solicitação de férias para o período aquisitivo atual." />
+      );
     }
 
     item.PeriodoAquisitivo = historicoOrdenado.length
       ? fimPeriodoAquisitivoAtual.toISOString()
       : colaborador.DataAdmissao;
   }
-
-  //CSS
 
   const containerStackTokens: IStackTokens = {
     childrenGap: 5,
