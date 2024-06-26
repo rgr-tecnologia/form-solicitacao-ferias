@@ -58,9 +58,9 @@ export function validateForm(
   }
 
   if (formData.Status === "Draft") {
-    const maxDate = new Date(
-      new Date(periodoAquisitivo).setDate(new Date().getDate() + 365 * 2 - 61)
-    );
+    const maxDate = new Date(periodoAquisitivo);
+    maxDate.setDate(maxDate.getDate() + 365 * 2 - 61);
+
     const dataInicioGreaterThanMaxDate = periodos.some((currentValue) =>
       isHigherThanMaxDate(currentValue, maxDate)
     );

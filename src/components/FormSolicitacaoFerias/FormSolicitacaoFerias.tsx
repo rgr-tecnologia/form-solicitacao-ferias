@@ -57,14 +57,6 @@ export default function FormSolicitacaoFerias(
   const fimPeriodoAquisitivoAtual = new Date(periodoAquisitivoAtual);
   fimPeriodoAquisitivoAtual.setDate(fimPeriodoAquisitivoAtual.getDate() + 365);
 
-  if (historicoOrdenado.length) {
-    periodoAquisitivoAtual.setFullYear(
-      new Date(
-        historicoOrdenado[historicoOrdenado.length - 1].PeriodoAquisitivo
-      ).getFullYear()
-    );
-  }
-
   const [formData, setFormData] =
     React.useState<FormSolicitacaoFeriasProps["item"]>(item);
 
