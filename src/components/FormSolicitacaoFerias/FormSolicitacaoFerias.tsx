@@ -44,18 +44,23 @@ export default function FormSolicitacaoFerias(
 
   const { Status } = item;
 
-  const historicoOrdenadoById = historico.sort((a, b) => {
-    return a.Id - b.Id;
-  });
+  const orderById = (
+    solicitacaoFerias: SolicitacaoFerias[]
+  ): SolicitacaoFerias[] => solicitacaoFerias.sort((a, b) => a.Id - b.Id);
 
-  const periodoAquisitivoAtual = new Date(colaborador.DataAdmissao);
+  const historicoOrdenado = orderById(historico);
+  const periodoAquisitivoAtual = historicoOrdenado.length
+    ? new Date(
+        historicoOrdenado[historicoOrdenado.length - 1].PeriodoAquisitivo
+      )
+    : new Date(colaborador.DataAdmissao);
+  const fimPeriodoAquisitivoAtual = new Date(periodoAquisitivoAtual);
+  fimPeriodoAquisitivoAtual.setDate(fimPeriodoAquisitivoAtual.getDate() + 365);
 
-  if (historicoOrdenadoById.length) {
+  if (historicoOrdenado.length) {
     periodoAquisitivoAtual.setFullYear(
       new Date(
-        historicoOrdenadoById[
-          historicoOrdenadoById.length - 1
-        ].PeriodoAquisitivo
+        historicoOrdenado[historicoOrdenado.length - 1].PeriodoAquisitivo
       ).getFullYear()
     );
   }
@@ -262,31 +267,7 @@ export default function FormSolicitacaoFerias(
     );
   }
 
-  const orderByPeriodoAquisitivo = (
-    solicitacaoFerias: SolicitacaoFerias[]
-  ): SolicitacaoFerias[] => {
-    const lastItem = solicitacaoFerias.sort((a, b) => {
-      return (
-        new Date(b.PeriodoAquisitivo).getFullYear() -
-        new Date(a.PeriodoAquisitivo).getFullYear()
-      );
-    });
-
-    return lastItem;
-  };
-
   if (displayMode === FormDisplayMode.New) {
-    const historicoOrdenado = orderByPeriodoAquisitivo(historico);
-    const periodoAquisitivoAtual = historicoOrdenado.length
-      ? new Date(
-          historicoOrdenado[historicoOrdenado.length - 1].PeriodoAquisitivo
-        )
-      : new Date(colaborador.DataAdmissao);
-    const fimPeriodoAquisitivoAtual = periodoAquisitivoAtual;
-    fimPeriodoAquisitivoAtual.setDate(
-      fimPeriodoAquisitivoAtual.getDate() + 365
-    );
-
     if (fimPeriodoAquisitivoAtual > new Date()) {
       return (
         <Disclaimer message="Você não possui saldo de dias para solicitar férias." />
