@@ -6,7 +6,6 @@ import { Dropdown, IDropdownOption } from "@fluentui/react/lib/Dropdown";
 import { Stack, IStackTokens } from "@fluentui/react/lib/Stack";
 import { CreateFormFeriasProps } from "./CreateForm.props";
 import { useQuantidadeDiasOptions } from "../../hooks/useQuantidadeDiasOptions";
-import { CreateSolicitacaoFerias } from "../../types/SolicitacaoFerias";
 
 const containerStackTokens: IStackTokens = {
   childrenGap: "1rem",
@@ -19,9 +18,7 @@ const spacingStackTokens: IStackTokens = {
 export default function CreateForm(
   props: CreateFormFeriasProps
 ): React.ReactElement<CreateFormFeriasProps> {
-  const { formData: initialData, onChange, onChangeModalidade } = props;
-  const [formData, setFormData] =
-    React.useState<CreateSolicitacaoFerias>(initialData);
+  const { formData, onChange, onChangeModalidade } = props;
 
   const QuantidadeDiasOptions = useQuantidadeDiasOptions();
 
@@ -40,7 +37,6 @@ export default function CreateForm(
     ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
     value?: string
   ): void => {
-    setFormData((prevData) => ({ ...prevData, Observacao: value }));
     onChange({ ...formData, Observacao: value });
   };
 
@@ -49,7 +45,6 @@ export default function CreateForm(
     option?: IDropdownOption
   ): void => {
     const selectedOption = QuantidadeDiasOptions[option.key as number];
-    setFormData((prevData) => ({ ...prevData, QtdDias: selectedOption.text }));
     onChange({ ...formData, QtdDias: selectedOption.text });
     onChangeModalidade(selectedOption.text);
   };
