@@ -3,7 +3,7 @@
   "solution": {
     "name": "form-solicitacao-ferias-client-side-solution",
     "id": "ee03db33-988b-442d-a9ff-4b62a0173ca6",
-    "version": "2.5.0.1",
+    "version": "2.5.0.4",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
